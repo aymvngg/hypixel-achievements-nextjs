@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #2d2d2d;
+  --foreground: #e8e8e8;
+  --mc-stone: #5a5a5a;
+  --mc-stone-dark: #3c3c3c;
+  --mc-stone-light: #7a7a7a;
+  --mc-grass: #5d8c3e;
+  --mc-grass-dark: #4a7032;
+  --mc-dirt: #8b6914;
+  --mc-gold: #ffaa00;
+  --mc-red: #aa3333;
+  --mc-sky: #87ceeb;
+  --mc-panel: #4a4a4a;
+  --mc-border: #1a1a1a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-mc-stone: var(--mc-stone);
+  --color-mc-stone-dark: var(--mc-stone-dark);
+  --color-mc-stone-light: var(--mc-stone-light);
+  --color-mc-grass: var(--mc-grass);
+  --color-mc-grass-dark: var(--mc-grass-dark);
+  --color-mc-dirt: var(--mc-dirt);
+  --color-mc-gold: var(--mc-gold);
+  --color-mc-red: var(--mc-red);
+  --color-mc-sky: var(--mc-sky);
+  --color-mc-panel: var(--mc-panel);
+  --color-mc-border: var(--mc-border);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-pixel);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+/* Subtle stone texture via gradient */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, transparent 40%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 4px,
+      rgba(0, 0, 0, 0.03) 4px,
+      rgba(0, 0, 0, 0.03) 8px
+    );
+  pointer-events: none;
+  z-index: -1;
+}
+
+.mc-block {
+  border: 3px solid var(--mc-border);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.25),
+    4px 4px 0 rgba(0, 0, 0, 0.35);
+  background: var(--mc-panel);
+}
+
+.mc-block-inset {
+  border: 3px solid var(--mc-border);
+  box-shadow:
+    inset 2px 2px 4px rgba(0, 0, 0, 0.4),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.05);
+  background: var(--mc-stone-dark);
+}
+
+.mc-btn {
+  border: 3px solid var(--mc-border);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.12),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+    3px 3px 0 rgba(0, 0, 0, 0.35);
+  font-family: var(--font-pixel), monospace;
+  text-transform: uppercase;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+.mc-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.mc-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.2),
+  inset -1px -1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mc-table th {
+  font-family: var(--font-pixel), monospace;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.mc-table td {
+  font-size: 0.875rem;
 }
