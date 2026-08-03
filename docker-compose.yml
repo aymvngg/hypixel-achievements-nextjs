@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    image: hypixel-achievements:current
+    container_name: hypixel_achievements_app
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    volumes:
+      - hypixel-cache:/app/lib/.cache
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.hypixel.rule=Host(`aphunt.aymvn.net`)"
+      - "traefik.http.routers.hypixel.entrypoints=web"
+      - "traefik.http.services.hypixel.loadbalancer.server.port=3000"
+    networks:
+      - proxy
+
+volumes:
+  hypixel-cache:
+
+networks:
+  proxy:
+    external: true
+    name: proxy
