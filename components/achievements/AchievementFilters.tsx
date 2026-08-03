@@ -1,126 +1,96 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
-import type { AchievementStatus, AchievementType, SortField } from '@/lib/util/validate';
+import { useState } from 'react';
+import type { AchievementStatus, SortField } from '@/lib/util/validate';
 import { SORT_LABELS } from '@/lib/search-params';
-import { buildAchievementSearchParams, type AchievementSearchParams } from '@/lib/search-params';
+import type { AchievementSearchParams } from '@/lib/search-params';
+import { useDebouncedCallback } from '@/lib/hooks/use-debounced-callback';
 import { PixelButton } from '@/components/ui/PixelButton';
-import { BlockPanel } from '@/components/ui/BlockPanel';
 
 export function AchievementFilters({
-  games,
   params,
+  setParams,
+  clearParams,
 }: {
-  games: string[];
   params: AchievementSearchParams;
+  setParams: (updates: Partial<AchievementSearchParams>) => void;
+  clearParams: () => void;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const syncedSearch = params.search ?? '';
+  const [searchInput, setSearchInput] = useState(syncedSearch);
+  const [lastSynced, setLastSynced] = useState(syncedSearch);
 
-  function update(updates: Partial<AchievementSearchParams>) {
-    const next = buildAchievementSearchParams(params, { ...updates, page: 1 });
-    const qs = next.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname);
+  if (lastSynced !== syncedSearch) {
+    setLastSynced(syncedSearch);
+    setSearchInput(syncedSearch);
   }
 
-  function clearFilters() {
-    router.push(pathname);
+  const debouncedSearch = useDebouncedCallback((value: string) => {
+    const trimmed = value.trim();
+    setParams({ search: trimmed || undefined });
+  }, 300);
+
+  function onSearchChange(value: string) {
+    setSearchInput(value);
+    debouncedSearch(value);
   }
 
   return (
-    <BlockPanel className="space-y-3">
-      <div className="flex flex-wrap gap-2 items-end">
-        <label className="flex flex-col gap-1 text-xs font-[family-name:var(--font-pixel)] uppercase">
-          Game
-          <select
-            value={params.game ?? ''}
-            onChange={(e) => update({ game: e.target.value || undefined })}
-            className="mc-block-inset px-2 py-1.5 text-sm bg-mc-stone-dark text-foreground min-w-[140px]"
-          >
-            <option value="">All games</option>
-            {games.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-1 text-xs font-[family-name:var(--font-pixel)] uppercase">
-          Type
-          <select
-            value={params.type ?? ''}
-            onChange={(e) =>
-              update({ type: (e.target.value as AchievementType) || undefined })
-            }
-            className="mc-block-inset px-2 py-1.5 text-sm bg-mc-stone-dark text-foreground"
-          >
-            <option value="">Any</option>
-            <option value="one-time">One-time</option>
-            <option value="tiered">Tiered</option>
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-1 text-xs font-[family-name:var(--font-pixel)] uppercase">
-          Status
-          <select
-            value={params.status ?? ''}
-            onChange={(e) =>
-              update({ status: (e.target.value as AchievementStatus) || undefined })
-            }
-            className="mc-block-inset px-2 py-1.5 text-sm bg-mc-stone-dark text-foreground"
-          >
-            <option value="">Any</option>
-            <option value="completed">Completed</option>
-            <option value="uncompleted">Uncompleted</option>
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-1 text-xs font-[family-name:var(--font-pixel)] uppercase">
-          Sort
-          <select
-            value={params.sort ?? ''}
-            onChange={(e) =>
-              update({ sort: (e.target.value as SortField) || undefined })
-            }
-            className="mc-block-inset px-2 py-1.5 text-sm bg-mc-stone-dark text-foreground"
-          >
-            <option value="">Default</option>
-            {(Object.keys(SORT_LABELS) as SortField[]).map((key) => (
-              <option key={key} value={key}>{SORT_LABELS[key]}</option>
-            ))}
-          </select>
-        </label>
-
-        <PixelButton
-          variant="stone"
-          onClick={() => update({ desc: !params.desc })}
-          className="self-end"
-        >
-          {params.desc ? 'Sort ↓' : 'Sort ↑'}
-        </PixelButton>
-
-        <PixelButton variant="red" onClick={clearFilters} className="self-end">
-          Clear
-        </PixelButton>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const fd = new FormData(e.currentTarget);
-          const search = (fd.get('search') as string)?.trim();
-          update({ search: search || undefined });
-        }}
-        className="flex gap-2"
-      >
+    <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-mc-border/40">
+      <div className="relative flex-1 min-w-[12rem]">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-mc-stone-light text-sm pointer-events-none select-none">
+          🔍
+        </span>
         <input
           name="search"
           type="search"
-          placeholder="Search by name..."
-          defaultValue={params.search ?? ''}
-          className="mc-block-inset flex-1 px-3 py-2 text-sm bg-mc-stone-dark text-foreground"
+          placeholder="Search achievements..."
+          value={searchInput}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="rounded-sm w-full pl-9 pr-3 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] focus:outline-none focus:ring-2 focus:ring-mc-sky/30"
         />
-        <PixelButton type="submit" variant="grass">Search</PixelButton>
-      </form>
-    </BlockPanel>
+      </div>
+
+      <select
+        aria-label="Status"
+        value={params.status ?? ''}
+        onChange={(e) =>
+          setParams({ status: (e.target.value as AchievementStatus) || undefined })
+        }
+        className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
+      >
+        <option value="">Any status</option>
+        <option value="completed">Completed</option>
+        <option value="uncompleted">Uncompleted</option>
+      </select>
+
+      <select
+        aria-label="Sort by"
+        value={params.sort ?? ''}
+        onChange={(e) =>
+          setParams({ sort: (e.target.value as SortField) || undefined })
+        }
+        className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
+      >
+        <option value="">Default sort</option>
+        {(Object.keys(SORT_LABELS) as SortField[]).map((key) => (
+          <option key={key} value={key}>
+            {SORT_LABELS[key]}
+          </option>
+        ))}
+      </select>
+
+      <PixelButton
+        variant="stone"
+        onClick={() => setParams({ desc: !params.desc })}
+        title={params.desc ? 'Sort descending' : 'Sort ascending'}
+      >
+        {params.desc ? '↓ Desc' : '↑ Asc'}
+      </PixelButton>
+
+      <PixelButton variant="red" onClick={clearParams}>
+        Clear
+      </PixelButton>
+    </div>
   );
 }

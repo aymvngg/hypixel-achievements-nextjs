@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter, VT323 } from 'next/font/google';
+import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { SiteHeader } from '@/components/layout/SiteHeader';
+import { CornerNav } from '@/components/layout/CornerNav';
 import './globals.css';
 
 const inter = Inter({
@@ -9,10 +10,22 @@ const inter = Inter({
   subsets: ['latin'],
 });
 
-const vt323 = VT323({
+const minecraft = localFont({
+  src: [
+    {
+      path: './fonts/minecraft.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/minecraft.woff',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
   variable: '--font-pixel',
-  weight: '400',
-  subsets: ['latin'],
+  display: 'swap',
+  fallback: ['monospace'],
 });
 
 export const metadata: Metadata = {
@@ -26,10 +39,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${vt323.variable} h-full`}>
-      <body className="min-h-full flex flex-col">
+    <html lang="en" className={`${inter.variable} ${minecraft.variable}`}>
+      <body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased">
         <QueryProvider>
-          <SiteHeader />
+          <CornerNav />
           <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">{children}</main>
         </QueryProvider>
       </body>

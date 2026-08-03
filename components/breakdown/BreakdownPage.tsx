@@ -1,28 +1,18 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { usePlayerData } from '@/lib/queries/use-player-data';
-import {
-  computeGameBreakdown,
-  sortGameBreakdown,
-  type BreakdownMetric,
-} from '@/lib/logic/breakdown';
+import { computeGameBreakdown, sortGameBreakdown } from '@/lib/logic/breakdown';
 import { PlayerHeader } from '@/components/player/PlayerHeader';
 import { PlayerNav } from '@/components/layout/PlayerNav';
 import { BreakdownTable } from '@/components/breakdown/BreakdownTable';
 import { BlockPanel } from '@/components/ui/BlockPanel';
-import { PixelButton } from '@/components/ui/PixelButton';
-import Link from 'next/link';
+import { Loading } from '@/components/ui/Loading';
 
 function BreakdownContent({ username }: { username: string }) {
-  const searchParams = useSearchParams();
-  const metric = (searchParams.get('metric') === 'missing' ? 'missing' : 'obtained') as BreakdownMetric;
-  const encoded = encodeURIComponent(username);
-
   const { data, isLoading, error } = usePlayerData(username);
 
   if (isLoading) {
-    return <BlockPanel className="text-center py-12 text-mc-sky">Loading breakdown...</BlockPanel>;
+    return <Loading message="Loading breakdown" />;
   }
 
   if (error) {
@@ -35,29 +25,22 @@ function BreakdownContent({ username }: { username: string }) {
 
   if (!data) return null;
 
-  const rows = sortGameBreakdown(computeGameBreakdown(data.views), metric);
-  const totals = rows.reduce(
-    (acc, r) => ({
-      obtained: acc.obtained + r.obtained,
-      missing: acc.missing + r.missing,
-      total: acc.total + r.total,
-    }),
-    { obtained: 0, missing: 0, total: 0 },
-  );
+  const rows = sortGameBreakdown(computeGameBreakdown(data.views), 'obtained');
 
   return (
     <div className="space-y-4">
       <PlayerHeader player={data.player} query={username} views={data.views} />
       <PlayerNav username={username} />
-      <div className="flex gap-2">
-        <Link href={`/player/${encoded}/breakdown?metric=obtained`}>
-          <PixelButton variant={metric === 'obtained' ? 'grass' : 'stone'}>By Obtained</PixelButton>
-        </Link>
-        <Link href={`/player/${encoded}/breakdown?metric=missing`}>
-          <PixelButton variant={metric === 'missing' ? 'grass' : 'stone'}>By Missing</PixelButton>
-        </Link>
+
+      {/* Section title */}
+      <div className="flex items-center gap-2 px-0.5">
+        <span className="w-1.5 h-5 bg-mc-gold" aria-hidden />
+        <h2 className="font-[family-name:var(--font-pixel)] text-base tracking-[0.06em] text-mc-sky">
+          Game Breakdown
+        </h2>
       </div>
-      <BreakdownTable rows={rows} totals={totals} />
+
+      <BreakdownTable rows={rows} />
     </div>
   );
 }

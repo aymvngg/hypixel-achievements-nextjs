@@ -4,6 +4,7 @@ import {
   fetchAchievements,
   fetchPlayer,
   getGameNames,
+  toPublicPlayerData,
 } from '@/lib/hypixel/api';
 import { formatError } from '@/lib/util/errors';
 import { validatePlayerQuery } from '@/lib/util/validate';
@@ -24,15 +25,18 @@ export async function GET(
     const views = correlateAchievements(achievementsResult.data, playerResult.data);
     const games = getGameNames(achievementsResult.data);
 
-    return NextResponse.json({
-      player: playerResult.data,
-      views,
-      games,
-      cache: {
-        achievementsHit: achievementsResult.hit,
-        playerHit: playerResult.hit,
+    return NextResponse.json(
+      {
+        player: toPublicPlayerData(playerResult.data),
+        views,
+        games,
+        cache: {
+          achievementsHit: achievementsResult.hit,
+          playerHit: playerResult.hit,
+        },
       },
-    });
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
+    );
   } catch (err) {
     const message = formatError(err);
     const status = message.includes('not found') || message.includes('never logged') ? 404 : 400;

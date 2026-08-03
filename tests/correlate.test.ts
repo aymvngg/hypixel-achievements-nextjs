@@ -41,6 +41,8 @@ function player(overrides: Partial<PlayerData> = {}): PlayerData {
     uuid: 'test-uuid',
     nickname: 'Test',
     rank: null,
+    rankPlusColor: null,
+    rankPrefixColor: null,
     achievementPoints: 0,
     tieredAchievements: {},
     oneTimeAchievements: [],

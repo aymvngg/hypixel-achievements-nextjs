@@ -1,9 +1,10 @@
 import Image from 'next/image';
-import type { AchievementView, PlayerData } from '@/lib/hypixel/types';
+import type { AchievementView, PublicPlayerData } from '@/lib/hypixel/types';
 import { sumObtainedPoints } from '@/lib/hypixel/types';
 import { getDisplayName } from '@/lib/util/display';
 import { playerHeadUrl } from '@/lib/util/playerHead';
 import { BlockPanel } from '@/components/ui/BlockPanel';
+import { PlayerName } from '@/components/player/PlayerName';
 
 export function PlayerHeader({
   player,
@@ -12,42 +13,116 @@ export function PlayerHeader({
   cache,
   showDebug,
 }: {
-  player: PlayerData;
+  player: PublicPlayerData;
   query: string;
   views?: AchievementView[];
   cache?: { achievementsHit?: boolean; playerHit?: boolean };
   showDebug?: boolean;
 }) {
   const displayName = getDisplayName(player, query);
-  const obtained = views ? sumObtainedPoints(views) : player.achievementPoints;
+  const obtained = views ? sumObtainedPoints(views) : 0;
   const total = views?.reduce((s, v) => s + v.totalPoints, 0) ?? 0;
   const pct = total > 0 ? ((obtained / total) * 100).toFixed(1) : '0.0';
+  const pctNum = total > 0 ? (obtained / total) * 100 : 0;
+  const completedCount = views?.filter((v) => v.completed).length ?? 0;
+  const totalCount = views?.length ?? 0;
 
   return (
-    <BlockPanel className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <Image
-        src={playerHeadUrl(player.uuid, 64)}
-        alt={displayName}
-        width={64}
-        height={64}
-        className="border-3 border-mc-border"
-        unoptimized
-      />
-      <div className="flex-1 min-w-0">
-        <h1 className="font-[family-name:var(--font-pixel)] text-2xl text-mc-gold truncate">
-          {displayName}
-        </h1>
-        <p className="text-mc-sky text-sm mt-1">
-          <span className="text-mc-gold font-bold">{obtained.toLocaleString()}</span>
-          {' / '}
-          {total.toLocaleString()} AP ({pct}%)
-        </p>
-        {showDebug && cache && (
-          <p className="text-xs text-mc-stone-light mt-1 font-mono">
-            {cache.achievementsHit ? 'HIT' : 'MISS'} ACH ·{' '}
-            {cache.playerHit ? 'HIT' : 'MISS'} PLR
-          </p>
-        )}
+    <BlockPanel variant="elevated" className="relative overflow-hidden">
+      <div className="relative flex flex-col gap-4">
+        {/* Top row: Avatar + Name + Stats */}
+        <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+          {/* Avatar */}
+          <div className="shrink-0">
+            <div className="rounded-sm border-[3px] border-mc-border overflow-hidden">
+              <Image
+                src={playerHeadUrl(player.uuid, 96)}
+                alt={displayName}
+                width={96}
+                height={96}
+                className="block"
+                style={{ imageRendering: 'pixelated' }}
+                unoptimized
+              />
+            </div>
+          </div>
+
+          {/* Name + Stats */}
+          <div className="flex-1 min-w-0 space-y-3">
+            <h1 className="font-[family-name:var(--font-pixel)] text-3xl tracking-[0.06em] leading-tight [text-shadow:2px_2px_0_rgba(0,0,0,0.45)] min-w-0">
+              <PlayerName player={player} fallback={query} />
+            </h1>
+
+            {/* Stat cards row */}
+            <div className="flex flex-wrap gap-3">
+              {/* AP Card */}
+              <div className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)]">
+                <span className="text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase text-mc-stone-light tracking-wider">
+                  Achievement Points
+                </span>
+                <span className="font-[family-name:var(--font-pixel)] text-sm">
+                  <span className="text-mc-grass font-bold">{obtained.toLocaleString()}</span>
+                  <span className="text-mc-stone-light"> / {total.toLocaleString()}</span>
+                </span>
+              </div>
+
+              {/* Completion % Card */}
+              <div className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)]">
+                <span className="text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase text-mc-stone-light tracking-wider">
+                  Completion
+                </span>
+                <span className="font-[family-name:var(--font-pixel)] text-lg text-mc-sky font-bold">
+                  {pct}%
+                </span>
+              </div>
+
+              {/* Achievements Completed Card */}
+              <div className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)]">
+                <span className="text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase text-mc-stone-light tracking-wider">
+                  Completed
+                </span>
+                <span className="font-[family-name:var(--font-pixel)] text-sm">
+                  <span className="text-mc-grass font-bold">{completedCount}</span>
+                  <span className="text-mc-stone-light"> / {totalCount}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Debug badges */}
+            {showDebug && cache && (
+              <div className="flex gap-2 mt-1">
+                <span
+                  className={`text-[0.6rem] font-mono px-1.5 py-0.5 rounded-sm border border-mc-border ${
+                    cache.achievementsHit
+                      ? 'bg-mc-grass/20 text-mc-grass'
+                      : 'bg-mc-red/20 text-mc-red'
+                  }`}
+                >
+                  {cache.achievementsHit ? 'HIT' : 'MISS'} ACH
+                </span>
+                <span
+                  className={`text-[0.6rem] font-mono px-1.5 py-0.5 rounded-sm border border-mc-border ${
+                    cache.playerHit
+                      ? 'bg-mc-grass/20 text-mc-grass'
+                      : 'bg-mc-red/20 text-mc-red'
+                  }`}
+                >
+                  {cache.playerHit ? 'HIT' : 'MISS'} PLR
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Full-width progress bar */}
+        <div className="space-y-1">
+          <div className="rounded-sm h-2.5 overflow-hidden border-[3px] border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)]">
+            <div
+              className="h-full bg-mc-grass"
+              style={{ width: `${Math.min(100, pctNum)}%` }}
+            />
+          </div>
+        </div>
       </div>
     </BlockPanel>
   );

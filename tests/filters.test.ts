@@ -3,14 +3,9 @@ import {
   applyFilters,
   applySorting,
   normalizeAchievementType,
-  getDisplayMode,
 } from '@/lib/util/filters';
 import type { AchievementView } from '@/lib/hypixel/api';
-import {
-  validatePlayerQuery,
-  parsePositiveInt,
-  resolveGameFilter,
-} from '@/lib/util/validate';
+import { validatePlayerQuery } from '@/lib/util/validate';
 
 function view(overrides: Partial<AchievementView> & Pick<AchievementView, 'name'>): AchievementView {
   const { name, ...rest } = overrides;

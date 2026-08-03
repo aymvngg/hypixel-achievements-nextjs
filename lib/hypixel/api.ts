@@ -8,13 +8,26 @@ import { readCache, writeCache, ACHIEVEMENTS_TTL, PLAYER_TTL, UUID_TTL } from '@
 import { isUuid, normalizeUuid } from '@/lib/util/validate';
 import { withRetry } from '@/lib/hypixel/retry';
 import type { AchievementView, PlayerData } from '@/lib/hypixel/types';
+import { toPublicPlayerData } from '@/lib/hypixel/types';
 import { sumObtainedPoints } from '@/lib/hypixel/types';
 
 export type { AchievementView, PlayerData };
+export { toPublicPlayerData };
 export { sumObtainedPoints };
 export { correlateAchievements, getGameNames };
 
 const MOJANG_API = 'https://api.mojang.com/users/profiles/minecraft';
+
+const inFlight = new Map<string, Promise<unknown>>();
+
+function dedupe<T>(key: string, operation: () => Promise<T>): Promise<T> {
+  const existing = inFlight.get(key) as Promise<T> | undefined;
+  if (existing) return existing;
+
+  const promise = operation().finally(() => inFlight.delete(key));
+  inFlight.set(key, promise);
+  return promise;
+}
 
 export interface CacheResult<T> {
   data: T;
@@ -25,12 +38,22 @@ interface PlayerCache {
   uuid: string;
   nickname: string;
   rank: string | null;
+  rankPlusColor: string | null;
+  rankPrefixColor: string | null;
   achievementPoints: number;
   tiered: Record<string, number>;
   oneTime: string[];
 }
 
+function colorHex(color: { toHex: () => string } | null | undefined): string | null {
+  return color?.toHex() ?? null;
+}
+
 async function resolveMojangUuid(ign: string): Promise<string | null> {
+  return dedupe(`mojang:${ign.toLowerCase()}`, () => resolveMojangUuidUncached(ign));
+}
+
+async function resolveMojangUuidUncached(ign: string): Promise<string | null> {
   const key = `uuid-${ign.toLowerCase()}`;
   const cached = await readCache<{ uuid: string }>(key);
   if (cached) return normalizeUuid(cached.uuid);
@@ -56,6 +79,8 @@ function playerFromCache(cached: PlayerCache): PlayerData {
     uuid: cached.uuid,
     nickname: cached.nickname,
     rank: cached.rank,
+    rankPlusColor: cached.rankPlusColor ?? null,
+    rankPrefixColor: cached.rankPrefixColor ?? null,
     achievementPoints: cached.achievementPoints,
     tieredAchievements: cached.tiered,
     oneTimeAchievements: cached.oneTime ?? [],
@@ -63,16 +88,20 @@ function playerFromCache(cached: PlayerCache): PlayerData {
 }
 
 async function readPlayerCache(uuid: string): Promise<PlayerData | null> {
-  const cached = await readCache<PlayerCache>(`player-v2-${normalizeUuid(uuid)}`);
+  const cached = await readCache<PlayerCache>(`player-v3-${normalizeUuid(uuid)}`);
   return cached ? playerFromCache(cached) : null;
 }
 
 async function writePlayerCache(data: PlayerCache): Promise<void> {
   const uuid = normalizeUuid(data.uuid);
-  await writeCache(`player-v2-${uuid}`, { ...data, uuid }, PLAYER_TTL);
+  await writeCache(`player-v3-${uuid}`, { ...data, uuid }, PLAYER_TTL);
 }
 
 export async function fetchAchievements(): Promise<CacheResult<Achievements>> {
+  return dedupe('achievements', fetchAchievementsUncached);
+}
+
+async function fetchAchievementsUncached(): Promise<CacheResult<Achievements>> {
   const cached = await readCache<Achievements>('achievements');
   if (cached) return { data: cached, hit: true };
 
@@ -83,6 +112,11 @@ export async function fetchAchievements(): Promise<CacheResult<Achievements>> {
 }
 
 export async function fetchPlayer(query: string): Promise<CacheResult<PlayerData>> {
+  const key = `player:${query.trim().toLowerCase()}`;
+  return dedupe(key, () => fetchPlayerUncached(query));
+}
+
+async function fetchPlayerUncached(query: string): Promise<CacheResult<PlayerData>> {
   let resolvedQuery = isUuid(query) ? normalizeUuid(query) : query;
 
   if (isUuid(query)) {
@@ -113,6 +147,8 @@ export async function fetchPlayer(query: string): Promise<CacheResult<PlayerData
     uuid: normalizeUuid(player.uuid),
     nickname: player.nickname,
     rank: player.rank as string | null,
+    rankPlusColor: colorHex(player.plusColor),
+    rankPrefixColor: colorHex(player.prefixColor),
     achievementPoints: player.achievementPoints,
     tiered,
     oneTime,
@@ -125,6 +161,8 @@ export async function fetchPlayer(query: string): Promise<CacheResult<PlayerData
       uuid: cacheData.uuid,
       nickname: player.nickname,
       rank: player.rank as string | null,
+      rankPlusColor: cacheData.rankPlusColor,
+      rankPrefixColor: cacheData.rankPrefixColor,
       achievementPoints: player.achievementPoints,
       tieredAchievements: tiered,
       oneTimeAchievements: oneTime,

@@ -7,7 +7,7 @@ import { queryKeys, STALE_TIME_PLAYER } from '@/lib/queries/keys';
 export function usePlayerData(username: string) {
   return useQuery({
     queryKey: queryKeys.player(username),
-    queryFn: () => fetchPlayerData(username),
+    queryFn: ({ signal }) => fetchPlayerData(username, signal),
     staleTime: STALE_TIME_PLAYER,
     enabled: username.length > 0,
   });

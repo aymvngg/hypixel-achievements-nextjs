@@ -1,6 +1,7 @@
-import type { AchievementView, PlayerData } from '@/lib/hypixel/types';
+import type { AchievementView } from '@/lib/hypixel/types';
 import type { CompareResult } from '@/lib/logic/compare';
 import type { CompareMetric } from '@/lib/logic/compare';
+import type { PublicPlayerData } from '@/lib/hypixel/types';
 
 export interface CacheMeta {
   achievementsHit: boolean;
@@ -8,15 +9,15 @@ export interface CacheMeta {
 }
 
 export interface PlayerApiResponse {
-  player: PlayerData;
+  player: PublicPlayerData;
   views: AchievementView[];
   games: string[];
   cache: CacheMeta;
 }
 
 export interface CompareApiResponse {
-  p1: PlayerData;
-  p2: PlayerData;
+  p1: PublicPlayerData;
+  p2: PublicPlayerData;
   p1Name: string;
   p2Name: string;
   result: CompareResult;
@@ -48,8 +49,11 @@ async function parseJson<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function fetchPlayerData(username: string): Promise<PlayerApiResponse> {
-  const res = await fetch(`/api/player/${encodeURIComponent(username)}`);
+export async function fetchPlayerData(
+  username: string,
+  signal?: AbortSignal,
+): Promise<PlayerApiResponse> {
+  const res = await fetch(`/api/player/${encodeURIComponent(username)}`, { signal });
   return parseJson<PlayerApiResponse>(res);
 }
 
@@ -57,8 +61,9 @@ export async function fetchCompare(
   p1: string,
   p2: string,
   metric: CompareMetric,
+  signal?: AbortSignal,
 ): Promise<CompareApiResponse> {
   const params = new URLSearchParams({ p1, p2, metric });
-  const res = await fetch(`/api/compare?${params}`);
+  const res = await fetch(`/api/compare?${params}`, { signal });
   return parseJson<CompareApiResponse>(res);
 }

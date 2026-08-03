@@ -1,7 +1,5 @@
 import type { AchievementStatus, AchievementType, SortField } from '@/lib/util/validate';
 
-export const PAGE_SIZE = 10;
-
 export const SORT_LABELS: Record<SortField, string> = {
   name: 'Name',
   'game-pct': 'Game %',
@@ -17,7 +15,6 @@ export interface AchievementSearchParams {
   sort?: SortField;
   desc?: boolean;
   search?: string;
-  page?: number;
   debug?: boolean;
 }
 
@@ -29,9 +26,6 @@ export function parseAchievementSearchParams(
     return typeof v === 'string' ? v : undefined;
   };
 
-  const pageRaw = get('page');
-  const page = pageRaw ? Math.max(1, parseInt(pageRaw, 10) || 1) : 1;
-
   return {
     game: get('game') || undefined,
     type: get('type') as AchievementType | undefined,
@@ -39,7 +33,6 @@ export function parseAchievementSearchParams(
     sort: (get('sort') as SortField) || undefined,
     desc: get('desc') === '1' || get('desc') === 'true',
     search: get('search') || undefined,
-    page,
     debug: get('debug') === '1' || get('debug') === 'true',
   };
 }
@@ -57,7 +50,6 @@ export function buildAchievementSearchParams(
   if (merged.sort) params.set('sort', merged.sort);
   if (merged.desc) params.set('desc', '1');
   if (merged.search) params.set('search', merged.search);
-  if (merged.page && merged.page > 1) params.set('page', String(merged.page));
   if (merged.debug) params.set('debug', '1');
 
   return params;

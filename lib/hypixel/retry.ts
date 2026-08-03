@@ -37,7 +37,9 @@ export async function withRetry<T>(
     } catch (err) {
       lastError = err;
       if (!isRetryableError(err) || attempt === maxAttempts) break;
-      await sleep(baseDelayMs * 2 ** (attempt - 1));
+      const backoff = baseDelayMs * 2 ** (attempt - 1);
+      const jitter = Math.floor(Math.random() * Math.max(1, backoff * 0.2));
+      await sleep(backoff + jitter);
     }
   }
 

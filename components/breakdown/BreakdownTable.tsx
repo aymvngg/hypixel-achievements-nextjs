@@ -1,110 +1,76 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
-} from '@tanstack/react-table';
+import Image from 'next/image';
 import type { GameBreakdownRow } from '@/lib/logic/breakdown';
-import { formatGameLabel } from '@/lib/util/games';
-import { BlockPanel } from '@/components/ui/BlockPanel';
+import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
 
 function pct(obtained: number, total: number): string {
   if (total <= 0) return '0.0';
   return ((obtained / total) * 100).toFixed(1);
 }
 
-const columns: ColumnDef<GameBreakdownRow>[] = [
-  {
-    accessorKey: 'game',
-    header: 'Game',
-    cell: ({ row }) => formatGameLabel(row.original.game),
-  },
-  {
-    accessorKey: 'obtained',
-    header: 'Obtained',
-    cell: ({ row }) => row.original.obtained.toLocaleString(),
-  },
-  {
-    accessorKey: 'missing',
-    header: 'Missing',
-    cell: ({ row }) => row.original.missing.toLocaleString(),
-  },
-  {
-    accessorKey: 'total',
-    header: 'Total',
-    cell: ({ row }) => row.original.total.toLocaleString(),
-  },
-  {
-    id: 'completion',
-    header: 'Done',
-    cell: ({ row }) =>
-      `${row.original.completed}/${row.original.count} (${pct(row.original.obtained, row.original.total)}%)`,
-  },
-];
+function GameCard({ row }: { row: GameBreakdownRow }) {
+  const icon = gameIconUrl(row.game);
+  const percent = row.total > 0 ? Math.min(100, (row.obtained / row.total) * 100) : 0;
+
+  return (
+    <div className="flex overflow-hidden rounded-sm border-[3px] border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_0_rgba(255,255,255,0.06),inset_-2px_-2px_0_rgba(0,0,0,0.25),4px_4px_0_rgba(0,0,0,0.35)]">
+      {/* Icon strip — full height */}
+      <div className="shrink-0 flex bg-mc-panel border-r-[3px] border-mc-border">
+        {icon && (
+          <Image
+            src={icon}
+            alt={formatGameLabel(row.game)}
+            width={64}
+            height={64}
+            className="block h-full w-auto"
+            style={{ imageRendering: 'pixelated' }}
+            unoptimized
+          />
+        )}
+      </div>
+
+      {/* Name + stats */}
+      <div className="flex-1 min-w-0 p-3 space-y-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="font-[family-name:var(--font-pixel)] text-white text-sm truncate">
+            {formatGameLabel(row.game)}
+          </h3>
+          <span className="font-[family-name:var(--font-pixel)] text-mc-sky text-sm tabular-nums shrink-0">
+            {pct(row.obtained, row.total)}%
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-mc-grass font-bold tabular-nums">
+            {row.obtained.toLocaleString()}
+          </span>
+          <span className="text-mc-stone-light">obtained</span>
+          <span className="text-mc-red tabular-nums ml-auto">
+            {row.missing.toLocaleString()}
+          </span>
+          <span className="text-mc-stone-light">missing</span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="h-3 rounded-sm overflow-hidden bg-black/40 shadow-[inset_1px_1px_3px_rgba(0,0,0,0.5)]">
+          <div className="h-full bg-mc-grass" style={{ width: `${percent}%` }} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function BreakdownTable({
   rows,
-  totals,
 }: {
   rows: GameBreakdownRow[];
-  totals: { obtained: number; missing: number; total: number };
 }) {
-  const [sorting, setSorting] = useState([{ id: 'obtained', desc: true }]);
-
-  const table = useReactTable({
-    data: rows,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
-    onSortingChange: setSorting,
-  });
-
   return (
-    <BlockPanel className="overflow-x-auto">
-      <table className="mc-table w-full border-collapse">
-        <thead>
-          {table.getHeaderGroups().map((hg) => (
-            <tr key={hg.id} className="border-b-2 border-mc-border">
-              {hg.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="text-left p-2 text-mc-gold cursor-pointer select-none"
-                  onClick={header.column.getToggleSortingHandler()}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {header.column.getIsSorted() === 'asc' ? ' ↑' : ''}
-                  {header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-mc-border/50 hover:bg-mc-stone-dark/50">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr className="border-t-2 border-mc-border font-bold text-mc-gold">
-            <td className="p-2">Total</td>
-            <td className="p-2">{totals.obtained.toLocaleString()}</td>
-            <td className="p-2">{totals.missing.toLocaleString()}</td>
-            <td className="p-2">{totals.total.toLocaleString()}</td>
-            <td className="p-2">{pct(totals.obtained, totals.total)}%</td>
-          </tr>
-        </tfoot>
-      </table>
-    </BlockPanel>
+    <div className="grid sm:grid-cols-2 gap-4">
+      {rows.map((row) => (
+        <GameCard key={row.game} row={row} />
+      ))}
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import {
   correlateAchievements,
   fetchAchievements,
   fetchPlayer,
+  toPublicPlayerData,
 } from '@/lib/hypixel/api';
 import {
   computeCompare,
@@ -55,20 +56,23 @@ export async function GET(request: Request) {
       shortName(p2Name),
     );
 
-    return NextResponse.json({
-      p1: p1Result.data,
-      p2: p2Result.data,
-      p1Name,
-      p2Name,
-      result: { ...result, rows: sortedRows },
-      metric,
-      verdict,
-      cache: {
-        achievementsHit: achievementsResult.hit,
-        p1Hit: p1Result.hit,
-        p2Hit: p2Result.hit,
+    return NextResponse.json(
+      {
+        p1: toPublicPlayerData(p1Result.data),
+        p2: toPublicPlayerData(p2Result.data),
+        p1Name,
+        p2Name,
+        result: { ...result, rows: sortedRows },
+        metric,
+        verdict,
+        cache: {
+          achievementsHit: achievementsResult.hit,
+          p1Hit: p1Result.hit,
+          p2Hit: p2Result.hit,
+        },
       },
-    });
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
+    );
   } catch (err) {
     const message = formatError(err);
     const status = message.includes('not found') || message.includes('never logged') ? 404 : 400;
