@@ -1,23 +1,61 @@
-# Hypixel Achievements (Web)
+# Hypixel Achievements
 
-Web version of the Hypixel achievements Discord bot. Browse player achievements, view per-game AP breakdowns, and compare two players.
+A Minecraft-styled web app for browsing Hypixel player achievements, viewing per-game achievement point (AP) breakdowns, and comparing two players head-to-head.
+
+Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI theme.
+
+## Features
+
+- **Player search** — look up any player by username or UUID.
+- **Achievement browser** — filter by game, type (one-time/tiered), and status (completed/uncompleted); search by name; sort by points, progress, global or per-game unlock percentage.
+- **AP breakdown** — a per-game table of obtained vs. missing achievement points, completion counts, and totals.
+- **Player comparison** — head-to-head AP comparison across every game, sorted by obtained or missing points, with a plain-language verdict.
+- **Rank display** — formatted player ranks and prefixes.
+- **Caching** — responses are cached to disk with TTLs (achievements definitions 24h, player data 5m, UUID lookups 6h) and deduplicated in-flight requests.
+
+## Pages
+
+| Path | Description |
+|------|-------------|
+| `/` | Landing page with player search |
+| `/player/[username]` | Achievement browser with filters and sorting |
+| `/player/[username]/breakdown` | Per-game achievement points breakdown |
+| `/compare?p1=&p2=&metric=` | Compare two players |
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript
+- **Data:** `hypixel-api-reborn`, TanStack Query, TanStack Table
+- **Styling:** Tailwind CSS v4, Minecraft-style theme with the `--font-pixel` display font
+- **Caching:** `keyv` + `keyv-file` (persistent JSON cache on disk)
 
 ## Setup
 
-1. Copy `.env.example` to `.env.local` and set your Hypixel API key:
+1. Install dependencies (Bun or npm):
 
-```bash
-cp .env.example .env.local
-```
+   ```bash
+   bun install
+   ```
 
-2. Install dependencies and run the dev server:
+2. Create your local environment file from the example and set a Hypixel API key:
 
-```bash
-bun install
-bun dev
-```
+   ```bash
+   cp .env.example .env.local
+   ```
 
-Open [http://localhost:3000](http://localhost:3000).
+   ```
+   HYPIXEL_API_KEY=your_hypixel_api_key_here
+   ```
+
+   You can get an API key with `/api new` in Hypixel, or by applying at [developer.hypixel.net](https://developer.hypixel.net).
+
+3. Run the dev server:
+
+   ```bash
+   bun dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
@@ -26,24 +64,35 @@ Open [http://localhost:3000](http://localhost:3000).
 | `bun dev` | Start development server |
 | `bun build` | Production build |
 | `bun start` | Start production server |
-| `bun test` | Run unit tests |
+| `bun test` | Run unit tests (Vitest) |
 | `bun run typecheck` | TypeScript check |
 | `bun run lint` | ESLint |
 
-## Routes
+## Docker
 
-| Path | Description |
-|------|-------------|
-| `/` | Landing + player search |
-| `/player/[username]` | Achievement browser with filters |
-| `/player/[username]/breakdown` | Per-game AP breakdown |
-| `/compare?p1=&p2=&metric=` | Compare two players |
+A multi-stage `Dockerfile` and `docker-compose.yml` are included for production deployment. The compose file wires the app behind a Traefik router on the `proxy` network and persists the response cache in a named volume.
 
-## Stack
+```bash
+docker compose up -d --build
+```
 
-- Next.js 16, React 19, TypeScript
-- TanStack Query + TanStack Table
-- Tailwind CSS v4
-- `hypixel-api-reborn` (same as Discord bot)
+## Project structure
 
-Core Hypixel logic is ported from `hypixel-achievements-discord-bot` into `lib/` for future consolidation.
+```
+app/                 # App Router pages + API routes
+  api/player/[username]  # Player + achievement data endpoint
+  api/compare            # Comparison endpoint
+  player/[username]      # Achievement browser + breakdown pages
+  compare/               # Compare page
+components/          # React components (pages, UI, layout)
+lib/
+  hypixel/           # Hypixel API client, caching, correlation logic
+  logic/             # Breakdown + comparison computation
+  queries/           # TanStack Query hooks
+  util/              # Games, filters, formatting, validation
+tests/               # Unit tests
+```
+
+## License
+
+[MIT](LICENSE)
