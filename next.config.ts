@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // output: 'standalone',
+  output: 'standalone',
   cacheComponents: true,
   cacheHandlers: {
     remote: require.resolve('./cache-handlers/disk-handler.js'),
