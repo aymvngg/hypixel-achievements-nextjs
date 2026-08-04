@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { PixelImg } from '@/components/ui/PixelImg';
 import type { AchievementView, PublicPlayerData } from '@/lib/hypixel/types';
 import { sumObtainedPoints } from '@/lib/hypixel/types';
 import { getDisplayName } from '@/lib/util/display';
@@ -31,14 +31,13 @@ export function PlayerHeader({
           {/* Avatar */}
           <div className="shrink-0">
             <div className="rounded-sm border-[3px] border-mc-border overflow-hidden">
-              <Image
+              <PixelImg
                 src={playerHeadUrl(player.uuid, 96)}
                 alt={displayName}
                 width={96}
                 height={96}
                 className="block"
-                style={{ imageRendering: 'pixelated' }}
-                unoptimized
+                loading="eager"
               />
             </div>
           </div>

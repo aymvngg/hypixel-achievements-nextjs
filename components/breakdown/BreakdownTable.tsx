@@ -1,6 +1,4 @@
-'use client';
-
-import Image from 'next/image';
+import { PixelImg } from '@/components/ui/PixelImg';
 import type { GameBreakdownRow } from '@/lib/logic/breakdown';
 import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
 
@@ -15,22 +13,18 @@ function GameCard({ row }: { row: GameBreakdownRow }) {
 
   return (
     <div className="flex overflow-hidden rounded-sm border-[3px] border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_0_rgba(255,255,255,0.06),inset_-2px_-2px_0_rgba(0,0,0,0.25),4px_4px_0_rgba(0,0,0,0.35)]">
-      {/* Icon strip — full height */}
       <div className="shrink-0 flex bg-mc-panel border-r-[3px] border-mc-border">
         {icon && (
-          <Image
+          <PixelImg
             src={icon}
             alt={formatGameLabel(row.game)}
             width={64}
             height={64}
             className="block h-full w-auto"
-            style={{ imageRendering: 'pixelated' }}
-            unoptimized
           />
         )}
       </div>
 
-      {/* Name + stats */}
       <div className="flex-1 min-w-0 p-3 space-y-2">
         <div className="flex items-baseline justify-between gap-2">
           <h3 className="font-[family-name:var(--font-pixel)] text-white text-sm truncate">
@@ -52,7 +46,6 @@ function GameCard({ row }: { row: GameBreakdownRow }) {
           <span className="text-mc-stone-light">missing</span>
         </div>
 
-        {/* Progress bar */}
         <div className="h-3 rounded-sm overflow-hidden bg-black/40 shadow-[inset_1px_1px_3px_rgba(0,0,0,0.5)]">
           <div className="h-full bg-mc-grass" style={{ width: `${percent}%` }} />
         </div>

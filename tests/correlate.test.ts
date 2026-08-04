@@ -94,5 +94,16 @@ describe('correlateAchievements', () => {
     expect(collections?.completed).toBe(false);
     expect(collections?.currentTier).toBe(1);
     expect(collections?.obtainedPoints).toBe(5);
+    expect(collections?.tierTarget).toBe(100);
+    expect(collections?.tierProgress).toBe(0.1);
+  });
+
+  it('computes tier progress as current stat over next tier target', () => {
+    const views = correlateAchievements(
+      achievements,
+      player({ tieredAchievements: { skyblockCollections: 75 } }),
+    );
+    const collections = views.find((v) => v.codeName === 'COLLECTIONS');
+    expect(collections?.tierProgress).toBe(0.75);
   });
 });

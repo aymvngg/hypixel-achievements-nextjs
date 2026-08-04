@@ -52,6 +52,17 @@ export function buildAchievementSearchParams(
   return params;
 }
 
+export function playerAchievementsHref(
+  username: string,
+  current: AchievementSearchParams,
+  updates: Partial<AchievementSearchParams> = {},
+): string {
+  const base = `/player/${encodeURIComponent(username)}`;
+  const params = buildAchievementSearchParams(current, updates);
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
 export function tierBar(current: number, max: number, width = 10): string {
   if (max === 0) return '';
   const filled = Math.round((current / max) * width);

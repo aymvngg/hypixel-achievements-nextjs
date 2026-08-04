@@ -1,21 +1,22 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { AchievementStatus, SortField } from '@/lib/util/validate';
-import { SORT_LABELS } from '@/lib/search-params';
-import type { AchievementSearchParams } from '@/lib/search-params';
+import { buildAchievementSearchParams, SORT_LABELS, type AchievementSearchParams } from '@/lib/search-params';
 import { useDebouncedCallback } from '@/lib/hooks/use-debounced-callback';
 import { PixelButton } from '@/components/ui/PixelButton';
 
 export function AchievementFilters({
+  username,
   params,
-  setParams,
-  clearParams,
 }: {
+  username: string;
   params: AchievementSearchParams;
-  setParams: (updates: Partial<AchievementSearchParams>) => void;
-  clearParams: () => void;
 }) {
+  const router = useRouter();
+  const pathname = `/player/${encodeURIComponent(username)}`;
+
   const syncedSearch = params.search ?? '';
   const [searchInput, setSearchInput] = useState(syncedSearch);
   const [lastSynced, setLastSynced] = useState(syncedSearch);
@@ -25,9 +26,15 @@ export function AchievementFilters({
     setSearchInput(syncedSearch);
   }
 
+  const navigate = (updates: Partial<AchievementSearchParams>) => {
+    const next = buildAchievementSearchParams(params, updates);
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
+
   const debouncedSearch = useDebouncedCallback((value: string) => {
     const trimmed = value.trim();
-    setParams({ search: trimmed || undefined });
+    navigate({ search: trimmed || undefined });
   }, 300);
 
   function onSearchChange(value: string) {
@@ -55,7 +62,7 @@ export function AchievementFilters({
         aria-label="Status"
         value={params.status ?? ''}
         onChange={(e) =>
-          setParams({ status: (e.target.value as AchievementStatus) || undefined })
+          navigate({ status: (e.target.value as AchievementStatus) || undefined })
         }
         className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
       >
@@ -67,9 +74,7 @@ export function AchievementFilters({
       <select
         aria-label="Sort by"
         value={params.sort ?? ''}
-        onChange={(e) =>
-          setParams({ sort: (e.target.value as SortField) || undefined })
-        }
+        onChange={(e) => navigate({ sort: (e.target.value as SortField) || undefined })}
         className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
       >
         <option value="">Default sort</option>
@@ -82,13 +87,13 @@ export function AchievementFilters({
 
       <PixelButton
         variant="stone"
-        onClick={() => setParams({ desc: !params.desc })}
+        onClick={() => navigate({ desc: !params.desc })}
         title={params.desc ? 'Sort descending' : 'Sort ascending'}
       >
         {params.desc ? '↓ Desc' : '↑ Asc'}
       </PixelButton>
 
-      <PixelButton variant="red" onClick={clearParams}>
+      <PixelButton variant="red" onClick={() => router.replace(pathname, { scroll: false })}>
         Clear
       </PixelButton>
     </div>

@@ -1,6 +1,4 @@
-'use client';
-
-import Image from 'next/image';
+import { PixelImg } from '@/components/ui/PixelImg';
 import type { CompareRow } from '@/lib/logic/compare';
 import type { PublicPlayerData } from '@/lib/hypixel/types';
 import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
@@ -31,14 +29,12 @@ function PlayerSide({
   const headBorder = status === 'win' ? 'border-mc-grass' : status === 'loss' ? 'border-mc-red' : 'border-mc-border';
   return (
     <div className={`flex items-center gap-2 min-w-0 ${right ? 'flex-row-reverse' : ''}`}>
-      <Image
+      <PixelImg
         src={playerHeadUrl(player.uuid, 40)}
         alt={name}
         width={40}
         height={40}
         className={`border-2 ${headBorder} rounded-sm shrink-0`}
-        style={{ imageRendering: 'pixelated' }}
-        unoptimized
       />
       <div className={`min-w-0 ${right ? 'text-right' : ''} flex-1`}>
         <p className={`${PF} text-xs uppercase tracking-wider truncate ${win ? 'text-mc-grass' : 'text-mc-stone-light'}`}>
@@ -97,15 +93,7 @@ export function CompareGameCards({
               />
               <div className="flex flex-col items-center gap-1 px-2 border-x-2 border-mc-border/50">
                 {icon && (
-                  <Image
-                    src={icon}
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="shrink-0"
-                    style={{ imageRendering: 'pixelated' }}
-                    unoptimized
-                  />
+                  <PixelImg src={icon} alt="" width={28} height={28} className="shrink-0" />
                 )}
                 <span className={`${PF} text-[0.65rem] text-mc-stone-light uppercase tracking-[0.03em] text-center leading-tight`}>
                   {formatGameLabel(row.game)}

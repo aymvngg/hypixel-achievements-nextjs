@@ -42,6 +42,8 @@ export function correlateAchievements(
       let maxTier = 1;
       let currentTier = 0;
       let description = achievement.description;
+      let tierTarget = 0;
+      let tierProgress = 0;
 
       if (isTiered && achievement.tierInformation) {
         const ti = achievement.tierInformation as {
@@ -72,6 +74,12 @@ export function correlateAchievements(
           nextAmount = info ? (parseInt(info.amount, 10) || 0) : 0;
         }
         const stat = Number(playerVal);
+        tierTarget = nextAmount;
+        if (currentTier >= maxTier) {
+          tierProgress = 1;
+        } else if (nextAmount > 0) {
+          tierProgress = Math.min(1, stat / nextAmount);
+        }
         description = description.replace(
           '%%value%%',
           `[${stat.toLocaleString()} / ${nextAmount.toLocaleString()}]`,
@@ -103,6 +111,8 @@ export function correlateAchievements(
         currentTier,
         maxTier,
         progress,
+        tierTarget,
+        tierProgress,
       });
     }
   }

@@ -43,7 +43,11 @@ export function applySorting(
       case 'global-pct':
         return dir * (a.globalPercentUnlocked - b.globalPercentUnlocked);
       case 'progress':
-        return dir * (a.progress - b.progress);
+        return (
+          dir *
+          ((a.type === 'TIERED' ? a.tierProgress : a.progress) -
+            (b.type === 'TIERED' ? b.tierProgress : b.progress))
+        );
       case 'points':
         return dir * (a.points - b.points);
       default:

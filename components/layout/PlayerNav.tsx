@@ -1,13 +1,14 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
-export function PlayerNav({ username }: { username: string }) {
-  const pathname = usePathname();
+export function PlayerNav({
+  username,
+  activeSection,
+}: {
+  username: string;
+  activeSection: 'achievements' | 'breakdown';
+}) {
   const encoded = encodeURIComponent(username);
   const base = `/player/${encoded}`;
-  const isBreakdown = pathname.startsWith(`${base}/breakdown`);
 
   return (
     <nav
@@ -16,18 +17,18 @@ export function PlayerNav({ username }: { username: string }) {
     >
       <Link
         href={base}
-        aria-current={!isBreakdown ? 'page' : undefined}
+        aria-current={activeSection === 'achievements' ? 'page' : undefined}
         className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
-          !isBreakdown ? 'bg-mc-grass text-white' : 'text-mc-stone-light hover:text-foreground'
+          activeSection === 'achievements' ? 'bg-mc-grass text-white' : 'text-mc-stone-light hover:text-foreground'
         }`}
       >
         🏆 Achievements
       </Link>
       <Link
         href={`${base}/breakdown`}
-        aria-current={isBreakdown ? 'page' : undefined}
+        aria-current={activeSection === 'breakdown' ? 'page' : undefined}
         className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
-          isBreakdown ? 'bg-mc-grass text-white' : 'text-mc-stone-light hover:text-foreground'
+          activeSection === 'breakdown' ? 'bg-mc-grass text-white' : 'text-mc-stone-light hover:text-foreground'
         }`}
       >
         📊 Breakdown

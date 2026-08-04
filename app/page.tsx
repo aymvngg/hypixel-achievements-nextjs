@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { PlayerSearch } from '@/components/home/PlayerSearch';
 import { BlockPanel } from '@/components/ui/BlockPanel';
 import { PixelButton } from '@/components/ui/PixelButton';
+import { PixelImg } from '@/components/ui/PixelImg';
 import { ALL_GAME_KEYS, formatGameLabel, gameIconUrl } from '@/lib/util/games';
 
 const features = [
@@ -66,14 +66,12 @@ export default function HomePage() {
                 title={formatGameLabel(key)}
                 className="flex items-center gap-1.5 px-2 py-1 rounded-sm border-2 border-mc-border bg-mc-stone-dark"
               >
-                <Image
+                <PixelImg
                   src={icon}
                   alt=""
                   width={16}
                   height={16}
                   className="shrink-0"
-                  style={{ imageRendering: 'pixelated' }}
-                  unoptimized
                 />
                 <span className="text-[0.65rem] font-[family-name:var(--font-pixel)] text-foreground">
                   {formatGameLabel(key)}

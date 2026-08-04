@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
-import { QueryProvider } from '@/components/providers/QueryProvider';
 import { CornerNav } from '@/components/layout/CornerNav';
 import './globals.css';
 
@@ -41,10 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${minecraft.variable}`}>
       <body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased">
-        <QueryProvider>
-          <CornerNav />
-          <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">{children}</main>
-        </QueryProvider>
+        <CornerNav />
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6">{children}</main>
       </body>
     </html>
   );

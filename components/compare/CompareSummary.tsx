@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { PixelImg } from '@/components/ui/PixelImg';
 import type { PublicPlayerData } from '@/lib/hypixel/types';
 import { PlayerName } from '@/components/player/PlayerName';
 import { playerHeadUrl } from '@/lib/util/playerHead';
@@ -18,14 +18,13 @@ function ScoreSide({
 }) {
   return (
     <div className={`flex items-center gap-3 min-w-0 ${align === 'left' ? '' : 'flex-row-reverse text-right'}`}>
-      <Image
+      <PixelImg
         src={playerHeadUrl(player.uuid, 48)}
         alt={name}
         width={48}
         height={48}
         className="border-2 border-mc-border rounded-sm shrink-0"
-        style={{ imageRendering: 'pixelated' }}
-        unoptimized
+        loading="eager"
       />
       <div className="min-w-0">
         <p

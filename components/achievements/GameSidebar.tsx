@@ -1,38 +1,33 @@
-'use client';
-
-import Image from 'next/image';
+import Link from 'next/link';
+import { PixelImg } from '@/components/ui/PixelImg';
 import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
 import type { AchievementSearchParams } from '@/lib/search-params';
+import { playerAchievementsHref } from '@/lib/search-params';
 import { BlockPanel } from '@/components/ui/BlockPanel';
+import type { GameStat } from '@/lib/logic/achievement-stats';
 
 const PF = 'font-[family-name:var(--font-pixel)]';
-
-export interface GameStat {
-  count: number;
-  obtained: number;
-  total: number;
-  completed: number;
-}
 
 function GameNavItem({
   active,
   label,
   stat,
   icon,
-  onSelect,
+  href,
 }: {
   active: boolean;
   label: string;
   stat: GameStat;
   icon?: string | null;
-  onSelect: () => void;
+  href: string;
 }) {
   const pct = stat.total > 0 ? (stat.obtained / stat.total) * 100 : 0;
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`w-full text-left rounded-sm border-2 transition-colors duration-150 ${
+    <Link
+      href={href}
+      scroll={false}
+      aria-current={active ? 'page' : undefined}
+      className={`block w-full text-left rounded-sm border-2 transition-colors duration-150 ${
         active
           ? 'bg-mc-grass/20 border-mc-grass'
           : 'border-transparent hover:bg-mc-stone-dark hover:border-mc-border/50'
@@ -40,15 +35,7 @@ function GameNavItem({
     >
       <div className="flex items-center gap-2.5 px-2 py-1.5">
         {icon ? (
-          <Image
-            src={icon}
-            alt=""
-            width={28}
-            height={28}
-            className="shrink-0"
-            style={{ imageRendering: 'pixelated' }}
-            unoptimized
-          />
+          <PixelImg src={icon} alt="" width={28} height={28} className="shrink-0" />
         ) : (
           <span className="w-7 h-7 shrink-0" />
         )}
@@ -69,20 +56,20 @@ function GameNavItem({
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   );
 }
 
 export function GameSidebar({
+  username,
   games,
   params,
-  setParams,
   totalStat,
   gameStats,
 }: {
+  username: string;
   games: string[];
   params: AchievementSearchParams;
-  setParams: (updates: Partial<AchievementSearchParams>) => void;
   totalStat: GameStat;
   gameStats: Record<string, GameStat>;
 }) {
@@ -99,7 +86,7 @@ export function GameSidebar({
           label="All games"
           stat={totalStat}
           icon="/icons/general.png"
-          onSelect={() => setParams({ game: undefined })}
+          href={playerAchievementsHref(username, params, { game: undefined })}
         />
         {sortedGames.map((game) => (
           <GameNavItem
@@ -108,7 +95,7 @@ export function GameSidebar({
             label={formatGameLabel(game)}
             stat={gameStats[game] ?? { count: 0, obtained: 0, total: 0, completed: 0 }}
             icon={gameIconUrl(game)}
-            onSelect={() => setParams({ game })}
+            href={playerAchievementsHref(username, params, { game })}
           />
         ))}
       </nav>

@@ -1,24 +1,13 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
 import { PixelButton } from '@/components/ui/PixelButton';
 
 export function CompareForm({ p1, p2 }: { p1: string; p2: string }) {
-  const router = useRouter();
-
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const fd = new FormData(e.currentTarget);
-        const nextP1 = (fd.get('p1') as string)?.trim();
-        const nextP2 = (fd.get('p2') as string)?.trim();
-        if (!nextP1 || !nextP2) return;
-        const params = new URLSearchParams({ p1: nextP1, p2: nextP2, metric: 'obtained' });
-        router.push(`/compare?${params}`);
-      }}
+      action="/compare"
+      method="GET"
       className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end"
     >
+      <input type="hidden" name="metric" value="obtained" />
       <label className="flex flex-col gap-1 text-xs font-[family-name:var(--font-pixel)] uppercase flex-1">
         Player 1
         <input

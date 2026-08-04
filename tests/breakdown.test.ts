@@ -21,6 +21,8 @@ function view(overrides: Partial<AchievementView> & Pick<AchievementView, 'game'
     currentTier: 0,
     maxTier: 1,
     progress: 0,
+    tierTarget: 0,
+    tierProgress: 0,
     ...rest,
   };
 }

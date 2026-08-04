@@ -1,6 +1,12 @@
-import Image from 'next/image';
+import type { Metadata } from 'next';
+import { PixelImg } from '@/components/ui/PixelImg';
 import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
 import type { CompareRow } from '@/lib/logic/compare';
+
+export const metadata: Metadata = {
+  title: 'Compare Design Showcase',
+  robots: { index: false, follow: false },
+};
 
 const PF = 'font-[family-name:var(--font-pixel)]';
 const PANEL =
@@ -133,7 +139,7 @@ function BreakdownA_Table() {
               <tr key={r.game} className={i % 2 ? 'bg-black/20' : ''}>
                 <td className="px-2 py-1.5 text-center">
                   {icon && (
-                    <Image src={icon} alt="" width={16} height={16} className="inline-block" style={{ imageRendering: 'pixelated' }} unoptimized />
+                    <PixelImg src={icon} alt="" width={16} height={16} className="inline-block" />
                   )}
                 </td>
                 <td className={`px-2 py-1.5 ${PF} text-xs text-mc-gold truncate`}>{formatGameLabel(r.game)}</td>
@@ -160,7 +166,7 @@ function BreakdownB_CardSplit() {
         return (
           <div key={r.game} className={`${PANEL} overflow-hidden`}>
             <div className="flex items-center gap-2 bg-mc-panel border-b-[3px] border-mc-border px-2.5 py-1.5">
-              {icon && <Image src={icon} alt="" width={20} height={20} className="shrink-0" style={{ imageRendering: 'pixelated' }} unoptimized />}
+              {icon && <PixelImg src={icon} alt="" width={20} height={20} className="shrink-0" />}
               <h3 className={`${PF} text-sm text-mc-gold uppercase tracking-[0.04em] truncate`}>{formatGameLabel(r.game)}</h3>
             </div>
             <div className="flex divide-x-2 divide-mc-border">
@@ -191,7 +197,7 @@ function BreakdownC_IconStrip() {
         return (
           <div key={r.game} className={`${PANEL} flex`}>
             <div className="bg-mc-panel border-r-[3px] border-mc-border grid place-items-center p-3 shrink-0">
-              {icon && <Image src={icon} alt="" width={32} height={32} style={{ imageRendering: 'pixelated' }} unoptimized />}
+              {icon && <PixelImg src={icon} alt="" width={32} height={32} />}
             </div>
             <div className="flex-1 min-w-0 p-2.5">
               <h3 className={`${PF} text-sm text-mc-gold uppercase truncate`}>{formatGameLabel(r.game)}</h3>
@@ -221,7 +227,7 @@ function BreakdownD_ClashBar() {
         return (
           <div key={r.game} className={`${PANEL} p-2.5`}>
             <div className="flex items-center gap-2 mb-2">
-              {icon && <Image src={icon} alt="" width={18} height={18} className="shrink-0" style={{ imageRendering: 'pixelated' }} unoptimized />}
+              {icon && <PixelImg src={icon} alt="" width={18} height={18} className="shrink-0" />}
               <h3 className={`${PF} text-sm text-mc-gold uppercase truncate flex-1`}>{formatGameLabel(r.game)}</h3>
             </div>
             <div className="flex justify-between items-baseline mb-1">
@@ -248,7 +254,7 @@ function BreakdownE_Minimal() {
         const winner = diff > 0 ? P1.name : diff < 0 ? P2.name : 'tie';
         return (
           <div key={r.game} className="flex items-center gap-3 px-3 py-2">
-            {icon && <Image src={icon} alt="" width={20} height={20} className="shrink-0" style={{ imageRendering: 'pixelated' }} unoptimized />}
+            {icon && <PixelImg src={icon} alt="" width={20} height={20} className="shrink-0" />}
             <span className={`${PF} text-sm text-mc-gold uppercase flex-1 truncate`}>{formatGameLabel(r.game)}</span>
             <span className={`${PF} text-xs ${diff > 0 ? 'text-mc-grass' : diff < 0 ? 'text-mc-red' : 'text-mc-stone-light'}`}>
               {winner === 'tie' ? 'TIE' : `${winner} +${Math.abs(diff).toLocaleString()}`}
@@ -290,7 +296,7 @@ function BreakdownF_Matchup() {
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
               <Side c="#3b82f6" name={P1.name} obt={r.p1Obtained} tot={r.p1Total} wins={p1Wins} />
               <div className="flex flex-col items-center gap-1 px-2 border-x-2 border-mc-border/50">
-                {icon && <Image src={icon} alt="" width={28} height={28} className="shrink-0" style={{ imageRendering: 'pixelated' }} unoptimized />}
+                {icon && <PixelImg src={icon} alt="" width={28} height={28} className="shrink-0" />}
                 <span className={`${PF} text-[0.65rem] text-mc-gold uppercase tracking-[0.03em] text-center leading-tight`}>{formatGameLabel(r.game)}</span>
               </div>
               <Side c="#22c55e" name={P2.name} obt={r.p2Obtained} tot={r.p2Total} wins={!p1Wins} right />

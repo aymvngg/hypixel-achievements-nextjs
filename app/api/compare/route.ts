@@ -1,19 +1,7 @@
 import { NextResponse } from 'next/server';
-import {
-  correlateAchievements,
-  fetchAchievements,
-  fetchPlayer,
-  toPublicPlayerData,
-} from '@/lib/hypixel/api';
-import {
-  computeCompare,
-  computeCompareVerdict,
-  sortCompareRows,
-  type CompareMetric,
-} from '@/lib/logic/compare';
-import { getDisplayName, shortName } from '@/lib/util/display';
+import { getComparePageData } from '@/lib/hypixel/compare-data';
 import { formatError } from '@/lib/util/errors';
-import { validatePlayerQuery } from '@/lib/util/validate';
+import type { CompareMetric } from '@/lib/logic/compare';
 
 function parseMetric(value: string | null): CompareMetric {
   return value === 'missing' ? 'missing' : 'obtained';
@@ -30,47 +18,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Both p1 and p2 are required' }, { status: 400 });
     }
 
-    const p1Query = validatePlayerQuery(p1Raw);
-    const p2Query = validatePlayerQuery(p2Raw);
+    const data = await getComparePageData(p1Raw, p2Raw, metric);
 
-    if (p1Query.toLowerCase() === p2Query.toLowerCase()) {
-      return NextResponse.json({ error: 'Players must be different' }, { status: 400 });
-    }
-
-    const [achievements, p1, p2] = await Promise.all([
-      fetchAchievements(),
-      fetchPlayer(p1Query),
-      fetchPlayer(p2Query),
-    ]);
-
-    const p1Views = correlateAchievements(achievements, p1);
-    const p2Views = correlateAchievements(achievements, p2);
-    const result = computeCompare(p1Views, p2Views);
-    const sortedRows = sortCompareRows(result.rows, metric);
-
-    const p1Name = getDisplayName(p1, p1Query);
-    const p2Name = getDisplayName(p2, p2Query);
-    const verdict = computeCompareVerdict(
-      result,
-      shortName(p1Name),
-      shortName(p2Name),
-    );
-
-    return NextResponse.json(
-      {
-        p1: toPublicPlayerData(p1),
-        p2: toPublicPlayerData(p2),
-        p1Name,
-        p2Name,
-        result: { ...result, rows: sortedRows },
-        metric,
-        verdict,
-      },
-      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
-    );
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
+    });
   } catch (err) {
     const message = formatError(err);
-    const status = message.includes('not found') || message.includes('never logged') ? 404 : 400;
+    const status =
+      message.includes('not found') ||
+      message.includes('never logged') ||
+      message.includes('different')
+        ? message.includes('different')
+          ? 400
+          : 404
+        : 400;
     return NextResponse.json({ error: message }, { status });
   }
 }

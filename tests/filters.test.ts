@@ -24,6 +24,8 @@ function view(overrides: Partial<AchievementView> & Pick<AchievementView, 'name'
     currentTier: 0,
     maxTier: 1,
     progress: 0,
+    tierTarget: 0,
+    tierProgress: 0,
     ...rest,
   };
 }
@@ -53,6 +55,16 @@ describe('applySorting', () => {
   it('sorts by name ascending', () => {
     const result = applySorting(views, 'name', false);
     expect(result.map((v) => v.name)).toEqual(['A', 'B']);
+  });
+
+  it('sorts tiered progress by closeness to next tier target', () => {
+    const tiered = [
+      view({ name: 'Far', type: 'TIERED', tierProgress: 0.2 }),
+      view({ name: 'Close', type: 'TIERED', tierProgress: 0.9 }),
+      view({ name: 'Mid', type: 'TIERED', tierProgress: 0.5 }),
+    ];
+    const result = applySorting(tiered, 'progress', true);
+    expect(result.map((v) => v.name)).toEqual(['Close', 'Mid', 'Far']);
   });
 });
 

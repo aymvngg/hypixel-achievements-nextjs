@@ -1,11 +1,5 @@
 import { NextResponse } from 'next/server';
-import {
-  correlateAchievements,
-  fetchAchievements,
-  fetchPlayer,
-  getGameNames,
-  toPublicPlayerData,
-} from '@/lib/hypixel/api';
+import { getPlayerPageData } from '@/lib/hypixel/player-data';
 import { formatError } from '@/lib/util/errors';
 import { validatePlayerQuery } from '@/lib/util/validate';
 
@@ -16,23 +10,11 @@ export async function GET(
   try {
     const { username: raw } = await context.params;
     const query = validatePlayerQuery(raw);
+    const data = await getPlayerPageData(query);
 
-    const [achievements, player] = await Promise.all([
-      fetchAchievements(),
-      fetchPlayer(query),
-    ]);
-
-    const views = correlateAchievements(achievements, player);
-    const games = getGameNames(achievements);
-
-    return NextResponse.json(
-      {
-        player: toPublicPlayerData(player),
-        views,
-        games,
-      },
-      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
-    );
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' },
+    });
   } catch (err) {
     const message = formatError(err);
     const status = message.includes('not found') || message.includes('never logged') ? 404 : 400;

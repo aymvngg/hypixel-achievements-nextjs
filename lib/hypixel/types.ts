@@ -13,6 +13,10 @@ export interface AchievementView {
   currentTier: number;
   maxTier: number;
   progress: number;
+  /** Next tier goal shown in the description (tiered only). */
+  tierTarget: number;
+  /** Progress toward the next tier goal, 0–1 (1 when max tier reached). */
+  tierProgress: number;
 }
 
 export interface PlayerData {
