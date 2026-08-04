@@ -15,7 +15,6 @@ export interface AchievementSearchParams {
   sort?: SortField;
   desc?: boolean;
   search?: string;
-  debug?: boolean;
 }
 
 export function parseAchievementSearchParams(
@@ -33,7 +32,6 @@ export function parseAchievementSearchParams(
     sort: (get('sort') as SortField) || undefined,
     desc: get('desc') === '1' || get('desc') === 'true',
     search: get('search') || undefined,
-    debug: get('debug') === '1' || get('debug') === 'true',
   };
 }
 
@@ -50,7 +48,6 @@ export function buildAchievementSearchParams(
   if (merged.sort) params.set('sort', merged.sort);
   if (merged.desc) params.set('desc', '1');
   if (merged.search) params.set('search', merged.search);
-  if (merged.debug) params.set('debug', '1');
 
   return params;
 }

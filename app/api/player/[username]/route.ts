@@ -17,23 +17,19 @@ export async function GET(
     const { username: raw } = await context.params;
     const query = validatePlayerQuery(raw);
 
-    const [achievementsResult, playerResult] = await Promise.all([
+    const [achievements, player] = await Promise.all([
       fetchAchievements(),
       fetchPlayer(query),
     ]);
 
-    const views = correlateAchievements(achievementsResult.data, playerResult.data);
-    const games = getGameNames(achievementsResult.data);
+    const views = correlateAchievements(achievements, player);
+    const games = getGameNames(achievements);
 
     return NextResponse.json(
       {
-        player: toPublicPlayerData(playerResult.data),
+        player: toPublicPlayerData(player),
         views,
         games,
-        cache: {
-          achievementsHit: achievementsResult.hit,
-          playerHit: playerResult.hit,
-        },
       },
       { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
     );

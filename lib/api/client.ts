@@ -3,16 +3,10 @@ import type { CompareResult } from '@/lib/logic/compare';
 import type { CompareMetric } from '@/lib/logic/compare';
 import type { PublicPlayerData } from '@/lib/hypixel/types';
 
-export interface CacheMeta {
-  achievementsHit: boolean;
-  playerHit: boolean;
-}
-
 export interface PlayerApiResponse {
   player: PublicPlayerData;
   views: AchievementView[];
   games: string[];
-  cache: CacheMeta;
 }
 
 export interface CompareApiResponse {
@@ -23,11 +17,6 @@ export interface CompareApiResponse {
   result: CompareResult;
   metric: CompareMetric;
   verdict: string;
-  cache: {
-    achievementsHit: boolean;
-    p1Hit: boolean;
-    p2Hit: boolean;
-  };
 }
 
 export class ApiError extends Error {

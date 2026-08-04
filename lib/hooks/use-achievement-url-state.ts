@@ -26,7 +26,6 @@ export function useAchievementUrlState() {
         sort: searchParams.get('sort') ?? undefined,
         desc: searchParams.get('desc') ?? undefined,
         search: searchParams.get('search') ?? undefined,
-        debug: searchParams.get('debug') ?? undefined,
       }),
     [searchParams],
   );

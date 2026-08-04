@@ -2,6 +2,27 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  cacheComponents: true,
+  cacheHandlers: {
+    remote: require.resolve('./cache-handlers/disk-handler.js'),
+  },
+  cacheLife: {
+    hypixelAchievements: {
+      stale: 300,
+      revalidate: 86_400,
+      expire: 86_400,
+    },
+    hypixelPlayer: {
+      stale: 300,
+      revalidate: 300,
+      expire: 300,
+    },
+    hypixelUuid: {
+      stale: 300,
+      revalidate: 21_600,
+      expire: 21_600,
+    },
+  },
   images: {
     remotePatterns: [
       {

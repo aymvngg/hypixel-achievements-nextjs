@@ -37,19 +37,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Players must be different' }, { status: 400 });
     }
 
-    const [achievementsResult, p1Result, p2Result] = await Promise.all([
+    const [achievements, p1, p2] = await Promise.all([
       fetchAchievements(),
       fetchPlayer(p1Query),
       fetchPlayer(p2Query),
     ]);
 
-    const p1Views = correlateAchievements(achievementsResult.data, p1Result.data);
-    const p2Views = correlateAchievements(achievementsResult.data, p2Result.data);
+    const p1Views = correlateAchievements(achievements, p1);
+    const p2Views = correlateAchievements(achievements, p2);
     const result = computeCompare(p1Views, p2Views);
     const sortedRows = sortCompareRows(result.rows, metric);
 
-    const p1Name = getDisplayName(p1Result.data, p1Query);
-    const p2Name = getDisplayName(p2Result.data, p2Query);
+    const p1Name = getDisplayName(p1, p1Query);
+    const p2Name = getDisplayName(p2, p2Query);
     const verdict = computeCompareVerdict(
       result,
       shortName(p1Name),
@@ -58,18 +58,13 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       {
-        p1: toPublicPlayerData(p1Result.data),
-        p2: toPublicPlayerData(p2Result.data),
+        p1: toPublicPlayerData(p1),
+        p2: toPublicPlayerData(p2),
         p1Name,
         p2Name,
         result: { ...result, rows: sortedRows },
         metric,
         verdict,
-        cache: {
-          achievementsHit: achievementsResult.hit,
-          p1Hit: p1Result.hit,
-          p2Hit: p2Result.hit,
-        },
       },
       { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
     );

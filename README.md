@@ -11,7 +11,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 - **AP breakdown** — a per-game table of obtained vs. missing achievement points, completion counts, and totals.
 - **Player comparison** — head-to-head AP comparison across every game, sorted by obtained or missing points, with a plain-language verdict.
 - **Rank display** — formatted player ranks and prefixes.
-- **Caching** — responses are cached to disk with TTLs (achievements definitions 24h, player data 5m, UUID lookups 6h) and deduplicated in-flight requests.
+- **Caching** — Hypixel and Mojang responses are cached on disk via Next.js 16 Cache Components (`use cache: remote`) with TTLs (achievements definitions 24h, player data 5m, UUID lookups 6h) and deduplicated in-flight requests.
 
 ## Pages
 
@@ -27,7 +27,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 - **Framework:** Next.js 16 (App Router), React 19, TypeScript
 - **Data:** `hypixel-api-reborn`, TanStack Query, TanStack Table
 - **Styling:** Tailwind CSS v4, Minecraft-style theme with the `--font-pixel` display font
-- **Caching:** `keyv` + `keyv-file` (persistent JSON cache on disk)
+- **Caching:** Next.js 16 Cache Components (`use cache: remote`) with a disk cache handler (`lib/.cache/next-cache`)
 
 ## Setup
 

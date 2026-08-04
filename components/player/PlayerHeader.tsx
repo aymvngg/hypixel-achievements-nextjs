@@ -10,14 +10,10 @@ export function PlayerHeader({
   player,
   query,
   views,
-  cache,
-  showDebug,
 }: {
   player: PublicPlayerData;
   query: string;
   views?: AchievementView[];
-  cache?: { achievementsHit?: boolean; playerHit?: boolean };
-  showDebug?: boolean;
 }) {
   const displayName = getDisplayName(player, query);
   const obtained = views ? sumObtainedPoints(views) : 0;
@@ -88,29 +84,6 @@ export function PlayerHeader({
               </div>
             </div>
 
-            {/* Debug badges */}
-            {showDebug && cache && (
-              <div className="flex gap-2 mt-1">
-                <span
-                  className={`text-[0.6rem] font-mono px-1.5 py-0.5 rounded-sm border border-mc-border ${
-                    cache.achievementsHit
-                      ? 'bg-mc-grass/20 text-mc-grass'
-                      : 'bg-mc-red/20 text-mc-red'
-                  }`}
-                >
-                  {cache.achievementsHit ? 'HIT' : 'MISS'} ACH
-                </span>
-                <span
-                  className={`text-[0.6rem] font-mono px-1.5 py-0.5 rounded-sm border border-mc-border ${
-                    cache.playerHit
-                      ? 'bg-mc-grass/20 text-mc-grass'
-                      : 'bg-mc-red/20 text-mc-red'
-                  }`}
-                >
-                  {cache.playerHit ? 'HIT' : 'MISS'} PLR
-                </span>
-              </div>
-            )}
           </div>
         </div>
 

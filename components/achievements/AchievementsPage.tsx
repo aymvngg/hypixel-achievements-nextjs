@@ -91,8 +91,6 @@ function AchievementsContent({ username }: { username: string }) {
           player={data.player}
           query={username}
           views={data.views}
-          cache={data.cache}
-          showDebug={params.debug}
         />
         <PlayerNav username={username} />
 
