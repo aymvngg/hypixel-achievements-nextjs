@@ -53,7 +53,6 @@ async function PlayerAchievementsContent({
 				initialParams={filterParams}
 				compactViews={toCompactViews(data.views)}
 				games={data.games}
-				currentUsername={decoded}
 			/>
 		</div>
 	)

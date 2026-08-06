@@ -1,6 +1,5 @@
 "use client"
 
-import { PlayerSwitchSearch } from "@/components/achievements/PlayerSwitchSearch"
 import { BlockPanel } from "@/components/ui/BlockPanel"
 import { PixelImg } from "@/components/ui/PixelImg"
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games"
@@ -68,14 +67,12 @@ export function GameSidebar({
 	params,
 	totalStat,
 	gameStats,
-	currentUsername,
 	onGameSelect,
 }: {
 	games: string[]
 	params: AchievementSearchParams
 	totalStat: GameStat
 	gameStats: Record<string, GameStat>
-	currentUsername: string
 	onGameSelect: (game: string | undefined) => void
 }) {
 	const sortedGames = [...games].sort((a, b) => formatGameLabel(a).localeCompare(formatGameLabel(b)))
@@ -83,7 +80,6 @@ export function GameSidebar({
 
 	return (
 		<BlockPanel className="p-2 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto">
-			<PlayerSwitchSearch currentUsername={currentUsername} />
 			<nav className="flex flex-col gap-0.5">
 				<GameNavItem
 					active={!activeGame}

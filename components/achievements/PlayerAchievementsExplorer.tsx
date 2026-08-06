@@ -17,12 +17,10 @@ export function PlayerAchievementsExplorer({
 	initialParams,
 	compactViews,
 	games,
-	currentUsername,
 }: {
 	initialParams: AchievementSearchParams
 	compactViews: CompactAchievementView[]
 	games: string[]
-	currentUsername: string
 }) {
 	const [views] = useState(() => fromCompactViews(compactViews))
 	const [params, setParams] = useState(initialParams)
@@ -71,7 +69,6 @@ export function PlayerAchievementsExplorer({
 					params={params}
 					totalStat={totalStat}
 					gameStats={gameStats}
-					currentUsername={currentUsername}
 					onGameSelect={(game) => updateParams({ game })}
 				/>
 			</aside>
