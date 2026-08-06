@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   applyFilters,
+  applySearch,
   applySorting,
   normalizeAchievementType,
 } from '@/lib/util/filters';
@@ -46,6 +47,18 @@ describe('applyFilters', () => {
     const result = applyFilters(views, 'BedWars', undefined, undefined);
     expect(result.length).toBe(1);
     expect(result[0].name).toBe('B');
+  });
+});
+
+describe('applySearch', () => {
+  it('matches achievement names and descriptions', () => {
+    const views = [
+      view({ name: 'Win a game', description: 'Play Bed Wars' }),
+      view({ name: 'Collector', description: 'Gather resources' }),
+    ];
+
+    expect(applySearch(views, 'bed').map((v) => v.name)).toEqual(['Win a game']);
+    expect(applySearch(views, 'resources').map((v) => v.name)).toEqual(['Collector']);
   });
 });
 

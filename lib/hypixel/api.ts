@@ -41,7 +41,7 @@ function colorHex(color: { toHex: () => string } | null | undefined): string | n
 }
 
 function toCacheable<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T;
+  return structuredClone(value);
 }
 
 function parsePlayerData(rawRes: RawPlayerResponse): PlayerData {

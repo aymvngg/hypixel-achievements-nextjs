@@ -8,7 +8,9 @@ export function normalizeAchievementType(type: AchievementType): 'ONE_TIME' | 'T
 export function applySearch(views: AchievementView[], search: string | undefined): AchievementView[] {
   if (!search) return views;
   const q = search.toLowerCase();
-  return views.filter((v) => v.name.toLowerCase().includes(q));
+  return views.filter(
+    (v) => v.name.toLowerCase().includes(q) || v.description.toLowerCase().includes(q),
+  );
 }
 
 export function applyFilters(

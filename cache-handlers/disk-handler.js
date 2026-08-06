@@ -3,15 +3,84 @@ const path = require('path');
 const crypto = require('crypto');
 
 const CACHE_DIR = path.join(process.cwd(), 'lib', '.cache', 'next-cache');
+const TAGS_INDEX_FILE = path.join(CACHE_DIR, '_tags.json');
 const pendingSets = new Map();
+let dirEnsured = false;
 
 function cacheFilePath(cacheKey) {
   const hash = crypto.createHash('sha256').update(cacheKey).digest('hex');
   return path.join(CACHE_DIR, `${hash}.json`);
 }
 
+function cacheFileName(cacheKey) {
+  return `${crypto.createHash('sha256').update(cacheKey).digest('hex')}.json`;
+}
+
 async function ensureDir() {
+  if (dirEnsured) return;
   await fs.mkdir(CACHE_DIR, { recursive: true });
+  dirEnsured = true;
+}
+
+async function readTagsIndex() {
+  try {
+    const raw = await fs.readFile(TAGS_INDEX_FILE, 'utf8');
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+async function writeTagsIndex(index) {
+  await ensureDir();
+  await fs.writeFile(TAGS_INDEX_FILE, JSON.stringify(index), 'utf8');
+}
+
+async function setTagsForFile(fileName, tags) {
+  if (!Array.isArray(tags) || tags.length === 0) return;
+
+  const index = await readTagsIndex();
+  for (const tagList of Object.values(index)) {
+    if (!Array.isArray(tagList)) continue;
+    const idx = tagList.indexOf(fileName);
+    if (idx !== -1) tagList.splice(idx, 1);
+  }
+  for (const tag of tags) {
+    if (!index[tag]) index[tag] = [];
+    if (!index[tag].includes(fileName)) index[tag].push(fileName);
+  }
+  await writeTagsIndex(index);
+}
+
+async function rebuildTagsIndex() {
+  const index = {};
+  let files;
+  try {
+    files = await fs.readdir(CACHE_DIR);
+  } catch {
+    return index;
+  }
+
+  await Promise.all(
+    files.map(async (file) => {
+      if (!file.endsWith('.json') || file === '_tags.json') return;
+      try {
+        const raw = await fs.readFile(path.join(CACHE_DIR, file), 'utf8');
+        const data = JSON.parse(raw);
+        if (!Array.isArray(data.tags)) return;
+        for (const tag of data.tags) {
+          if (!index[tag]) index[tag] = [];
+          if (!index[tag].includes(file)) index[tag].push(file);
+        }
+      } catch {
+        // Ignore unreadable cache files while rebuilding the tag index.
+      }
+    }),
+  );
+
+  await writeTagsIndex(index);
+  return index;
 }
 
 async function readStream(stream) {
@@ -88,6 +157,7 @@ module.exports = {
       await ensureDir();
       const entry = await pendingEntry;
       const buffer = await readStream(entry.value);
+      const fileName = cacheFileName(cacheKey);
 
       await fs.writeFile(
         cacheFilePath(cacheKey),
@@ -101,6 +171,8 @@ module.exports = {
         }),
         'utf8',
       );
+
+      await setTagsForFile(fileName, entry.tags);
     } catch (err) {
       console.warn(
         `Warning: failed to write Next.js cache entry (${err instanceof Error ? err.message : String(err)})`,
@@ -120,22 +192,39 @@ module.exports = {
   async updateTags(tags) {
     try {
       await ensureDir();
-      const files = await fs.readdir(CACHE_DIR);
+      let index = await readTagsIndex();
+      const hasIndexedTags = tags.some((tag) => Array.isArray(index[tag]) && index[tag].length > 0);
+      if (!hasIndexedTags) {
+        index = await rebuildTagsIndex();
+      }
+
+      const filesToDelete = new Set();
+      for (const tag of tags) {
+        const fileList = index[tag];
+        if (!Array.isArray(fileList)) continue;
+        for (const file of fileList) filesToDelete.add(file);
+      }
+
       await Promise.all(
-        files.map(async (file) => {
-          if (!file.endsWith('.json')) return;
-          const filePath = path.join(CACHE_DIR, file);
+        [...filesToDelete].map(async (file) => {
           try {
-            const raw = await fs.readFile(filePath, 'utf8');
-            const data = JSON.parse(raw);
-            if (Array.isArray(data.tags) && data.tags.some((tag) => tags.includes(tag))) {
-              await fs.unlink(filePath);
-            }
+            await fs.unlink(path.join(CACHE_DIR, file));
           } catch {
-            // Ignore unreadable cache files during tag invalidation.
+            // Ignore missing cache files during tag invalidation.
           }
         }),
       );
+
+      for (const file of filesToDelete) {
+        for (const [tag, fileList] of Object.entries(index)) {
+          if (!Array.isArray(fileList)) continue;
+          const next = fileList.filter((entry) => entry !== file);
+          if (next.length === 0) delete index[tag];
+          else index[tag] = next;
+        }
+      }
+
+      await writeTagsIndex(index);
     } catch {
       // Ignore missing cache directory during tag invalidation.
     }

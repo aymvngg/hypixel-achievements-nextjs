@@ -7,6 +7,27 @@ export interface GameStat {
   completed: number;
 }
 
+export interface PlayerAchievementSummary {
+  obtained: number;
+  total: number;
+  completedCount: number;
+  totalCount: number;
+}
+
+export function summarizeAchievementViews(views: AchievementView[]): PlayerAchievementSummary {
+  let obtained = 0;
+  let total = 0;
+  let completedCount = 0;
+
+  for (const view of views) {
+    obtained += view.obtainedPoints;
+    total += view.totalPoints;
+    if (view.completed) completedCount++;
+  }
+
+  return { obtained, total, completedCount, totalCount: views.length };
+}
+
 export function computeGameStats(views: AchievementView[]): {
   gameStats: Record<string, GameStat>;
   totalStat: GameStat;

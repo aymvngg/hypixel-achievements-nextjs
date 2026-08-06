@@ -1,17 +1,15 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { GameSidebar } from '@/components/achievements/GameSidebar';
+import { PlayerAchievementsExplorer } from '@/components/achievements/PlayerAchievementsExplorer';
 import { PlayerHeader } from '@/components/player/PlayerHeader';
 import { PlayerNav } from '@/components/layout/PlayerNav';
 import { BlockPanel } from '@/components/ui/BlockPanel';
 import { Loading } from '@/components/ui/Loading';
 import { getPlayerPageData } from '@/lib/hypixel/player-data';
-import { computeGameStats, splitViewsByType } from '@/lib/logic/achievement-stats';
+import { summarizeAchievementViews } from '@/lib/logic/achievement-stats';
+import { toCompactViews } from '@/lib/client/compact-views';
 import { getDisplayName } from '@/lib/util/display';
 import { formatError } from '@/lib/util/errors';
-import { recomputeViews } from '@/lib/util/filters';
-import { AchievementFilters } from '@/components/achievements/AchievementFilters';
-import { AchievementTables } from '@/components/achievements/AchievementTables';
 import { parseAchievementSearchParams } from '@/lib/search-params';
 
 export async function generateMetadata({
@@ -52,39 +50,18 @@ async function PlayerAchievementsContent({
     );
   }
 
-  const filtered = recomputeViews(data.views, {
-    search: filterParams.search,
-    game: filterParams.game,
-    type: filterParams.type,
-    status: filterParams.status,
-    sortField: filterParams.sort ?? 'points',
-    sortDesc: filterParams.sort ? (filterParams.desc ?? false) : true,
-  });
-  const { tiered, oneTime } = splitViewsByType(filtered);
-  const { gameStats, totalStat } = computeGameStats(data.views);
+  const summary = summarizeAchievementViews(data.views);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 items-start">
-      <aside className="w-full lg:w-56 shrink-0 order-2 lg:order-1 lg:sticky lg:top-6 lg:self-start">
-        <GameSidebar
-          username={decoded}
-          games={data.games}
-          params={filterParams}
-          totalStat={totalStat}
-          gameStats={gameStats}
-        />
-      </aside>
-      <div className="flex-1 min-w-0 space-y-4 order-1 lg:order-2">
-        <PlayerHeader player={data.player} query={decoded} views={data.views} />
-        <PlayerNav username={decoded} activeSection="achievements" />
-        <AchievementFilters username={decoded} params={filterParams} />
-        <AchievementTables
-          username={decoded}
-          params={filterParams}
-          tieredViews={tiered}
-          oneTimeViews={oneTime}
-        />
-      </div>
+    <div className="space-y-4">
+      <PlayerHeader player={data.player} query={decoded} summary={summary} />
+      <PlayerNav username={decoded} activeSection="achievements" />
+      <PlayerAchievementsExplorer
+        key={decoded}
+        initialParams={filterParams}
+        compactViews={toCompactViews(data.views)}
+        games={data.games}
+      />
     </div>
   );
 }

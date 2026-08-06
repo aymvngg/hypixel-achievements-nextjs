@@ -1,8 +1,8 @@
-import Link from 'next/link';
+'use client';
+
 import { PixelImg } from '@/components/ui/PixelImg';
 import { formatGameLabel, gameIconUrl } from '@/lib/util/games';
 import type { AchievementSearchParams } from '@/lib/search-params';
-import { playerAchievementsHref } from '@/lib/search-params';
 import { BlockPanel } from '@/components/ui/BlockPanel';
 import type { GameStat } from '@/lib/logic/achievement-stats';
 
@@ -13,19 +13,19 @@ function GameNavItem({
   label,
   stat,
   icon,
-  href,
+  onSelect,
 }: {
   active: boolean;
   label: string;
   stat: GameStat;
   icon?: string | null;
-  href: string;
+  onSelect: () => void;
 }) {
   const pct = stat.total > 0 ? (stat.obtained / stat.total) * 100 : 0;
   return (
-    <Link
-      href={href}
-      scroll={false}
+    <button
+      type="button"
+      onClick={onSelect}
       aria-current={active ? 'page' : undefined}
       className={`block w-full text-left rounded-sm border-2 transition-colors duration-150 ${
         active
@@ -56,22 +56,22 @@ function GameNavItem({
           </div>
         </div>
       </div>
-    </Link>
+    </button>
   );
 }
 
 export function GameSidebar({
-  username,
   games,
   params,
   totalStat,
   gameStats,
+  onGameSelect,
 }: {
-  username: string;
   games: string[];
   params: AchievementSearchParams;
   totalStat: GameStat;
   gameStats: Record<string, GameStat>;
+  onGameSelect: (game: string | undefined) => void;
 }) {
   const sortedGames = [...games].sort((a, b) =>
     formatGameLabel(a).localeCompare(formatGameLabel(b)),
@@ -86,7 +86,7 @@ export function GameSidebar({
           label="All games"
           stat={totalStat}
           icon="/icons/general.png"
-          href={playerAchievementsHref(username, params, { game: undefined })}
+          onSelect={() => onGameSelect(undefined)}
         />
         {sortedGames.map((game) => (
           <GameNavItem
@@ -95,7 +95,7 @@ export function GameSidebar({
             label={formatGameLabel(game)}
             stat={gameStats[game] ?? { count: 0, obtained: 0, total: 0, completed: 0 }}
             icon={gameIconUrl(game)}
-            href={playerAchievementsHref(username, params, { game })}
+            onSelect={() => onGameSelect(game)}
           />
         ))}
       </nav>

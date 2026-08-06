@@ -1,20 +1,12 @@
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import { CompareForm } from '@/components/compare/CompareForm';
+import { CompareGameCards } from '@/components/compare/CompareGameCards';
 import { CompareSummary } from '@/components/compare/CompareSummary';
 import { BlockPanel } from '@/components/ui/BlockPanel';
 import { Loading } from '@/components/ui/Loading';
 import { getComparePageData } from '@/lib/hypixel/compare-data';
 import { shortName } from '@/lib/util/display';
 import { formatError } from '@/lib/util/errors';
-
-const CompareGameCards = dynamic(
-  () =>
-    import('@/components/compare/CompareGameCards').then((m) => ({
-      default: m.CompareGameCards,
-    })),
-  { loading: () => <Loading message="Loading comparison" /> },
-);
 
 async function CompareResults({ p1, p2 }: { p1: string; p2: string }) {
   let data;

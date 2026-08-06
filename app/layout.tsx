@@ -7,6 +7,8 @@ import './globals.css';
 const inter = Inter({
   variable: '--font-body',
   subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
 });
 
 const minecraft = localFont({

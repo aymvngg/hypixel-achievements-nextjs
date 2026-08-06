@@ -308,7 +308,9 @@ function BreakdownF_Matchup() {
   );
 }
 
-export default function CompareShowcasePage() {
+export default async function CompareShowcasePage() {
+  'use cache';
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-6 space-y-6">
       <h1 className={`${PF} text-mc-gold text-2xl uppercase tracking-wide`}>Compare — Design Showcase</h1>

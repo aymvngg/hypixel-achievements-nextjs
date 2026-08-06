@@ -7,6 +7,7 @@ import { BlockPanel } from '@/components/ui/BlockPanel';
 import { Loading } from '@/components/ui/Loading';
 import { getPlayerPageData } from '@/lib/hypixel/player-data';
 import { computeGameBreakdown, sortGameBreakdown } from '@/lib/logic/breakdown';
+import { summarizeAchievementViews } from '@/lib/logic/achievement-stats';
 import { getDisplayName } from '@/lib/util/display';
 import { formatError } from '@/lib/util/errors';
 
@@ -46,10 +47,11 @@ async function PlayerBreakdownContent({
   }
 
   const rows = sortGameBreakdown(computeGameBreakdown(data.views), 'obtained');
+  const summary = summarizeAchievementViews(data.views);
 
   return (
     <div className="space-y-4">
-      <PlayerHeader player={data.player} query={decoded} views={data.views} />
+      <PlayerHeader player={data.player} query={decoded} summary={summary} />
       <PlayerNav username={decoded} activeSection="breakdown" />
 
       <div className="flex items-center gap-2 px-0.5">

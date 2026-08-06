@@ -20,12 +20,13 @@ const features = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  'use cache';
+
   const gameKeys = ALL_GAME_KEYS.filter((k) => k !== 'general' && k !== 'skyclash');
 
   return (
     <div className="space-y-8 py-8">
-      {/* Hero */}
       <div className="text-center space-y-3">
         <h1 className="font-[family-name:var(--font-pixel)] text-3xl sm:text-4xl text-mc-gold">
           Hypixel Achievements
@@ -36,10 +37,8 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Search */}
       <PlayerSearch />
 
-      {/* Features */}
       <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
         {features.map((f) => (
           <BlockPanel key={f.title} className="text-center space-y-2">
@@ -51,7 +50,6 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Game coverage strip */}
       <div className="max-w-3xl mx-auto">
         <p className="text-center text-xs font-[family-name:var(--font-pixel)] uppercase text-mc-stone-light tracking-wider mb-3">
           Every Hypixel game, tracked
@@ -82,7 +80,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Compare CTA */}
       <div className="text-center">
         <Link href="/compare">
           <PixelButton variant="stone" className="px-6">

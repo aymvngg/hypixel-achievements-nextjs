@@ -63,6 +63,13 @@ export function playerAchievementsHref(
   return qs ? `${base}?${qs}` : base;
 }
 
+export function syncAchievementFiltersToUrl(params: AchievementSearchParams): void {
+  if (typeof window === 'undefined') return;
+  const qs = buildAchievementSearchParams({}, params).toString();
+  const next = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+  window.history.replaceState(window.history.state, '', next);
+}
+
 export function tierBar(current: number, max: number, width = 10): string {
   if (max === 0) return '';
   const filled = Math.round((current / max) * width);

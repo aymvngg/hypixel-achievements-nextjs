@@ -1,6 +1,6 @@
 import { PixelImg } from '@/components/ui/PixelImg';
-import type { AchievementView, PublicPlayerData } from '@/lib/hypixel/types';
-import { sumObtainedPoints } from '@/lib/hypixel/types';
+import type { PublicPlayerData } from '@/lib/hypixel/types';
+import type { PlayerAchievementSummary } from '@/lib/logic/achievement-stats';
 import { getDisplayName } from '@/lib/util/display';
 import { playerHeadUrl } from '@/lib/util/playerHead';
 import { BlockPanel } from '@/components/ui/BlockPanel';
@@ -9,19 +9,16 @@ import { PlayerName } from '@/components/player/PlayerName';
 export function PlayerHeader({
   player,
   query,
-  views,
+  summary,
 }: {
   player: PublicPlayerData;
   query: string;
-  views?: AchievementView[];
+  summary: PlayerAchievementSummary;
 }) {
   const displayName = getDisplayName(player, query);
-  const obtained = views ? sumObtainedPoints(views) : 0;
-  const total = views?.reduce((s, v) => s + v.totalPoints, 0) ?? 0;
+  const { obtained, total, completedCount, totalCount } = summary;
   const pct = total > 0 ? ((obtained / total) * 100).toFixed(1) : '0.0';
   const pctNum = total > 0 ? (obtained / total) * 100 : 0;
-  const completedCount = views?.filter((v) => v.completed).length ?? 0;
-  const totalCount = views?.length ?? 0;
 
   return (
     <BlockPanel variant="elevated" className="relative overflow-hidden">
