@@ -101,7 +101,7 @@ describe("getNicknameColor", () => {
 	});
 
 	it("keeps the nickname pink for PIG+++ special ranks", () => {
-		expect(getNicknameColor("PIG+++", null, "§d[PIG§b+++§d]")).toBe(
+		expect(getNicknameColor("PIG+++")).toBe(
 			HYPIXEL_HEX.LIGHT_PURPLE,
 		);
 	});

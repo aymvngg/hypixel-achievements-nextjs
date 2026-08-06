@@ -185,7 +185,6 @@ export function parseMinecraftColoredText(
 export function getNicknameColor(
 	rank: string | null,
 	rankPrefixColorHex?: string | null,
-	rawPrefix?: string | null,
 ): string {
 	switch (rank) {
 		case "VIP":

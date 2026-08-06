@@ -1,24 +1,8 @@
 import Link from "next/link";
 import { PlayerSearch } from "@/components/home/PlayerSearch";
-import { BlockPanel } from "@/components/ui/BlockPanel";
 import { PixelButton } from "@/components/ui/PixelButton";
 import { PixelImg } from "@/components/ui/PixelImg";
 import { ALL_GAME_KEYS, formatGameLabel, gameIconUrl } from "@/lib/util/games";
-
-const features = [
-	{
-		title: "Explore",
-		body: "Filter and sort every achievement by game, type, status, and reward.",
-	},
-	{
-		title: "Break down",
-		body: "See obtained vs missing AP for each game on one clean table.",
-	},
-	{
-		title: "Compare",
-		body: "Head-to-head AP comparison between any two players.",
-	},
-];
 
 export default async function HomePage() {
 	"use cache";

@@ -225,7 +225,9 @@ function VirtualizedAchievementTable({
 	variant: "tiered" | "one-time";
 	onSort: (updates: Partial<AchievementSearchParams>) => void;
 }) {
+	"use no memo";
 	const scrollRef = useRef<HTMLDivElement>(null);
+	// eslint-disable-next-line react-hooks/incompatible-library -- opted out of compiler via "use no memo" above
 	const rowVirtualizer = useVirtualizer({
 		count: views.length,
 		getScrollElement: () => scrollRef.current,

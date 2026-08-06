@@ -20,7 +20,6 @@ export function PlayerName({
 	const nicknameColor = getNicknameColor(
 		player.rank,
 		player.rankPrefixColor,
-		player.rankPrefix,
 	);
 	const badge = getPlayerBadge(player.uuid);
 
