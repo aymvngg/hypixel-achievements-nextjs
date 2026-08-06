@@ -30,6 +30,7 @@ function tierObtainedPoints(
 export function correlateAchievements(
 	achievements: Achievements,
 	player: PlayerData,
+	legacyKeys?: ReadonlySet<string>,
 ): AchievementView[] {
 	const results: AchievementView[] = [];
 	const oneTimeSet = new Set(player.oneTimeAchievements);
@@ -41,6 +42,10 @@ export function correlateAchievements(
 		if (isRemovedGame(ga.category)) continue;
 
 		for (const achievement of ga.achievements) {
+			if (legacyKeys?.has(`${ga.category}_${achievement.codeName}`)) {
+				continue;
+			}
+
 			const bareKey = toCamelCase(achievement.codeName);
 			const prefixedKey = toCamelCase(
 				`${ga.category}_${achievement.codeName}`,

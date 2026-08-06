@@ -32,7 +32,7 @@ export async function getComparePageData(
 		throw new Error("Players must be different");
 	}
 
-	const [achievements, player1, player2] = await Promise.all([
+	const [catalog, player1, player2] = await Promise.all([
 		fetchAchievements(),
 		fetchPlayer(p1Query),
 		fetchPlayer(p2Query),
@@ -40,8 +40,16 @@ export async function getComparePageData(
 
 	cacheTag(`player:${player1.uuid}`, `player:${player2.uuid}`);
 
-	const p1Views = correlateAchievements(achievements, player1);
-	const p2Views = correlateAchievements(achievements, player2);
+	const p1Views = correlateAchievements(
+		catalog.achievements,
+		player1,
+		catalog.legacyKeys,
+	);
+	const p2Views = correlateAchievements(
+		catalog.achievements,
+		player2,
+		catalog.legacyKeys,
+	);
 	const result = computeCompare(p1Views, p2Views);
 	const sortedRows = sortCompareRows(result.rows, metric);
 

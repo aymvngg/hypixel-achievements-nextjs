@@ -4,6 +4,8 @@ import { cacheLife } from "next/cache";
 import type { Achievements } from "hypixel-api-reborn";
 import { Player } from "hypixel-api-reborn";
 import { getHypixelClient } from "@/lib/hypixel/client";
+import { collectLegacyAchievementKeys } from "@/lib/hypixel/achievement-legacy";
+import type { RawAchievementsResponse } from "@/lib/hypixel/achievement-legacy";
 import { correlateAchievements, getGameNames } from "@/lib/hypixel/correlate";
 import type { RawQuestsResponse } from "@/lib/hypixel/correlate-quests";
 import { isUuid, normalizeUuid } from "@/lib/util/validate";
@@ -107,13 +109,23 @@ async function loadQuests(): Promise<RawQuestsResponse> {
 	});
 }
 
-async function loadAchievements(): Promise<Achievements> {
+export interface AchievementCatalog {
+	achievements: Achievements;
+	legacyKeys: ReadonlySet<string>;
+}
+
+async function loadAchievements(): Promise<AchievementCatalog> {
 	"use cache: remote";
 	cacheLife("hypixelAchievements");
 
 	const client = getHypixelClient();
+	const rawRes = (await withRetry(() =>
+		client.getAchievements({ raw: true }),
+	)) as unknown as RawAchievementsResponse;
 	const achievements = await withRetry(() => client.getAchievements());
-	return toCacheable(achievements);
+	const legacyKeys = collectLegacyAchievementKeys(rawRes);
+
+	return toCacheable({ achievements, legacyKeys });
 }
 
 async function loadMojangUuid(ign: string): Promise<string | null> {
@@ -149,7 +161,7 @@ async function loadPlayerByUuid(uuid: string): Promise<PlayerData> {
 	return parsePlayerData(rawRes);
 }
 
-export async function fetchAchievements(): Promise<Achievements> {
+export async function fetchAchievements(): Promise<AchievementCatalog> {
 	return dedupe("achievements", loadAchievements);
 }
 

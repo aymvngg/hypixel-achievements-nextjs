@@ -16,7 +16,7 @@ export async function getPlayerPageData(
 	"use cache: remote";
 	cacheLife("hypixelPlayer");
 
-	const [achievements, player] = await Promise.all([
+	const [catalog, player] = await Promise.all([
 		fetchAchievements(),
 		fetchPlayer(query),
 	]);
@@ -25,7 +25,11 @@ export async function getPlayerPageData(
 
 	return {
 		player: toPublicPlayerData(player),
-		views: correlateAchievements(achievements, player),
-		games: getGameNames(achievements),
+		views: correlateAchievements(
+			catalog.achievements,
+			player,
+			catalog.legacyKeys,
+		),
+		games: getGameNames(catalog.achievements),
 	};
 }
