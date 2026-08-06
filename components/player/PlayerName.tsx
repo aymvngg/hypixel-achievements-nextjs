@@ -1,5 +1,7 @@
 import { getNicknameColor, hasDisplayableRank } from '@/lib/util/rank-format';
 import { RankPrefix } from '@/components/player/RankPrefix';
+import { PlayerBadge } from '@/components/player/PlayerBadge';
+import { getPlayerBadge } from '@/lib/util/special-players';
 import type { PublicPlayerData } from '@/lib/hypixel/types';
 
 export function PlayerName({
@@ -14,6 +16,7 @@ export function PlayerName({
   const nickname =
     player.nickname && player.nickname !== 'UNKNOWN' ? player.nickname : (fallback ?? 'Unknown');
   const nicknameColor = getNicknameColor(player.rank, player.rankPrefixColor);
+  const badge = getPlayerBadge(player.uuid);
 
   return (
     <span className={`block truncate ${className}`}>
@@ -27,6 +30,11 @@ export function PlayerName({
         )}
         <span style={{ color: nicknameColor }}>{nickname}</span>
       </span>
+      {badge && (
+        <span className="ml-1.5 align-middle">
+          <PlayerBadge type={badge} />
+        </span>
+      )}
     </span>
   );
 }
