@@ -10,7 +10,7 @@ const STYLES: Record<PlayerBadgeType, { label: string; className: string }> = {
 		className: "bg-mc-sky/20 text-mc-sky border-mc-sky/40",
 	},
 	technoblade: {
-		label: "Technoblade Never Dies",
+		label: "Never Dies",
 		className: "bg-[#2a0f2a]/80 text-[#ff55ff] border-[#ff55ff]/50",
 	},
 }
