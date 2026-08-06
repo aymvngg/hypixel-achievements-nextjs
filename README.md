@@ -15,12 +15,12 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 
 ## Pages
 
-| Path | Description |
-|------|-------------|
-| `/` | Landing page with player search |
-| `/player/[username]` | Achievement browser with filters and sorting |
-| `/player/[username]/breakdown` | Per-game achievement points breakdown |
-| `/compare?p1=&p2=&metric=` | Compare two players |
+| Path                           | Description                                  |
+| ------------------------------ | -------------------------------------------- |
+| `/`                            | Landing page with player search              |
+| `/player/[username]`           | Achievement browser with filters and sorting |
+| `/player/[username]/breakdown` | Per-game achievement points breakdown        |
+| `/compare?p1=&p2=&metric=`     | Compare two players                          |
 
 ## Stack
 
@@ -33,40 +33,40 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 
 1. Install dependencies (Bun or npm):
 
-   ```bash
-   bun install
-   ```
+    ```bash
+    bun install
+    ```
 
 2. Create your local environment file from the example and set a Hypixel API key:
 
-   ```bash
-   cp .env.example .env.local
-   ```
+    ```bash
+    cp .env.example .env.local
+    ```
 
-   ```
-   HYPIXEL_API_KEY=your_hypixel_api_key_here
-   ```
+    ```
+    HYPIXEL_API_KEY=your_hypixel_api_key_here
+    ```
 
-   You can get an API key with `/api new` in Hypixel, or by applying at [developer.hypixel.net](https://developer.hypixel.net).
+    You can get an API key with `/api new` in Hypixel, or by applying at [developer.hypixel.net](https://developer.hypixel.net).
 
 3. Run the dev server:
 
-   ```bash
-   bun dev
-   ```
+    ```bash
+    bun dev
+    ```
 
-   Open [http://localhost:3000](http://localhost:3000).
+    Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `bun dev` | Start development server |
-| `bun build` | Production build |
-| `bun start` | Start production server |
-| `bun test` | Run unit tests (Vitest) |
-| `bun run typecheck` | TypeScript check |
-| `bun run lint` | ESLint |
+| Command             | Description              |
+| ------------------- | ------------------------ |
+| `bun dev`           | Start development server |
+| `bun build`         | Production build         |
+| `bun start`         | Start production server  |
+| `bun test`          | Run unit tests (Vitest)  |
+| `bun run typecheck` | TypeScript check         |
+| `bun run lint`      | ESLint                   |
 
 ## Docker
 

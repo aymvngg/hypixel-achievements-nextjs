@@ -1,54 +1,62 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { AchievementFilters } from "@/components/achievements/AchievementFilters"
-import { AchievementTables } from "@/components/achievements/AchievementTables"
-import { GameSidebar } from "@/components/achievements/GameSidebar"
-import { fromCompactViews, type CompactAchievementView } from "@/lib/client/compact-views"
-import { computeGameStats, splitViewsByType } from "@/lib/logic/achievement-stats"
+import { useEffect, useState } from "react";
+import { AchievementFilters } from "@/components/achievements/AchievementFilters";
+import { AchievementTables } from "@/components/achievements/AchievementTables";
+import { GameSidebar } from "@/components/achievements/GameSidebar";
+import {
+	fromCompactViews,
+	type CompactAchievementView,
+} from "@/lib/client/compact-views";
+import {
+	computeGameStats,
+	splitViewsByType,
+} from "@/lib/logic/achievement-stats";
 import {
 	parseAchievementSearchParams,
 	syncAchievementFiltersToUrl,
 	type AchievementSearchParams,
-} from "@/lib/search-params"
-import { recomputeViews } from "@/lib/util/filters"
+} from "@/lib/search-params";
+import { recomputeViews } from "@/lib/util/filters";
 
 export function PlayerAchievementsExplorer({
 	initialParams,
 	compactViews,
 	games,
 }: {
-	initialParams: AchievementSearchParams
-	compactViews: CompactAchievementView[]
-	games: string[]
+	initialParams: AchievementSearchParams;
+	compactViews: CompactAchievementView[];
+	games: string[];
 }) {
-	const [views] = useState(() => fromCompactViews(compactViews))
-	const [params, setParams] = useState(initialParams)
+	const [views] = useState(() => fromCompactViews(compactViews));
+	const [params, setParams] = useState(initialParams);
 
 	function updateParams(updates: Partial<AchievementSearchParams>) {
 		setParams((current) => {
-			const next = { ...current, ...updates }
-			syncAchievementFiltersToUrl(next)
-			return next
-		})
+			const next = { ...current, ...updates };
+			syncAchievementFiltersToUrl(next);
+			return next;
+		});
 	}
 
 	function clearParams() {
-		setParams({})
-		syncAchievementFiltersToUrl({})
+		setParams({});
+		syncAchievementFiltersToUrl({});
 	}
 
 	useEffect(() => {
 		const onPopState = () => {
-			const parsed = parseAchievementSearchParams(Object.fromEntries(new URLSearchParams(window.location.search)))
-			setParams(parsed)
-		}
+			const parsed = parseAchievementSearchParams(
+				Object.fromEntries(new URLSearchParams(window.location.search)),
+			);
+			setParams(parsed);
+		};
 
-		window.addEventListener("popstate", onPopState)
-		return () => window.removeEventListener("popstate", onPopState)
-	}, [])
+		window.addEventListener("popstate", onPopState);
+		return () => window.removeEventListener("popstate", onPopState);
+	}, []);
 
-	const { gameStats, totalStat } = computeGameStats(views)
+	const { gameStats, totalStat } = computeGameStats(views);
 
 	const filtered = recomputeViews(views, {
 		search: params.search,
@@ -57,9 +65,9 @@ export function PlayerAchievementsExplorer({
 		status: params.status,
 		sortField: params.sort ?? "points",
 		sortDesc: params.sort ? (params.desc ?? false) : true,
-	})
-	const { tiered, oneTime } = splitViewsByType(filtered)
-	const showingFiltered = filtered.length !== views.length
+	});
+	const { tiered, oneTime } = splitViewsByType(filtered);
+	const showingFiltered = filtered.length !== views.length;
 
 	return (
 		<div className="flex flex-col lg:flex-row gap-4 items-start">
@@ -74,15 +82,25 @@ export function PlayerAchievementsExplorer({
 			</aside>
 			<div className="flex-1 min-w-0 space-y-4 order-1 lg:order-2">
 				<div className="sticky top-0 z-20 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-mc-border/40 space-y-2 lg:static lg:mx-0 lg:px-0 lg:py-0 lg:bg-transparent lg:backdrop-blur-none lg:border-b-0">
-					<AchievementFilters params={params} onChange={updateParams} onClear={clearParams} />
+					<AchievementFilters
+						params={params}
+						onChange={updateParams}
+						onClear={clearParams}
+					/>
 					{showingFiltered && (
 						<p className="text-xs font-[family-name:var(--font-pixel)] text-mc-stone-light tracking-wide">
-							Showing {filtered.length.toLocaleString()} of {views.length.toLocaleString()} achievements
+							Showing {filtered.length.toLocaleString()} of{" "}
+							{views.length.toLocaleString()} achievements
 						</p>
 					)}
 				</div>
-				<AchievementTables params={params} tieredViews={tiered} oneTimeViews={oneTime} onSort={updateParams} />
+				<AchievementTables
+					params={params}
+					tieredViews={tiered}
+					oneTimeViews={oneTime}
+					onSort={updateParams}
+				/>
 			</div>
 		</div>
-	)
+	);
 }

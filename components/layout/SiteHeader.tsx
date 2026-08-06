@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import type { FormEvent } from "react"
-import { PlayerSearchInput } from "@/components/home/PlayerSearchInput"
-import { PixelButton } from "@/components/ui/PixelButton"
-import { validatePlayerQuery } from "@/lib/util/validate"
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { FormEvent } from "react";
+import { PlayerSearchInput } from "@/components/home/PlayerSearchInput";
+import { PixelButton } from "@/components/ui/PixelButton";
+import { validatePlayerQuery } from "@/lib/util/validate";
 
 function getCurrentUsername(pathname: string): string | undefined {
-	if (!pathname.startsWith("/player/")) return undefined
-	const segments = pathname.split("/").filter(Boolean)
-	if (segments.length < 2) return undefined
-	return decodeURIComponent(segments[1])
+	if (!pathname.startsWith("/player/")) return undefined;
+	const segments = pathname.split("/").filter(Boolean);
+	if (segments.length < 2) return undefined;
+	return decodeURIComponent(segments[1]);
 }
 
 export function SiteHeader() {
-	const pathname = usePathname()
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const currentUsername = getCurrentUsername(pathname)
-	const showPlayerSearch = pathname !== "/"
+	const pathname = usePathname();
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const currentUsername = getCurrentUsername(pathname);
+	const showPlayerSearch = pathname !== "/";
 
 	function handleSubmit(event: FormEvent<HTMLFormElement>) {
-		event.preventDefault()
-		const formData = new FormData(event.currentTarget)
-		const raw = formData.get("username")
-		if (typeof raw !== "string") return
+		event.preventDefault();
+		const formData = new FormData(event.currentTarget);
+		const raw = formData.get("username");
+		if (typeof raw !== "string") return;
 
-		const query = validatePlayerQuery(raw)
-		const currentQuery = searchParams.toString()
-		const nextUrl = `/player/${encodeURIComponent(query)}${currentQuery ? `?${currentQuery}` : ""}`
-		router.push(nextUrl)
+		const query = validatePlayerQuery(raw);
+		const currentQuery = searchParams.toString();
+		const nextUrl = `/player/${encodeURIComponent(query)}${currentQuery ? `?${currentQuery}` : ""}`;
+		router.push(nextUrl);
 	}
 
 	return (
@@ -62,7 +62,10 @@ export function SiteHeader() {
 				</div>
 
 				{showPlayerSearch ? (
-					<form onSubmit={handleSubmit} className="flex gap-2 w-full lg:w-auto lg:min-w-76">
+					<form
+						onSubmit={handleSubmit}
+						className="flex gap-2 w-full lg:w-auto lg:min-w-76"
+					>
 						<PlayerSearchInput
 							key={currentUsername ?? "player-search"}
 							defaultValue={currentUsername}
@@ -70,12 +73,16 @@ export function SiteHeader() {
 							placeholder="Switch player..."
 							className="px-2.5 py-2 text-sm"
 						/>
-						<PixelButton type="submit" variant="grass" className="px-4 shrink-0">
+						<PixelButton
+							type="submit"
+							variant="grass"
+							className="px-4 shrink-0"
+						>
 							Go
 						</PixelButton>
 					</form>
 				) : null}
 			</div>
 		</header>
-	)
+	);
 }

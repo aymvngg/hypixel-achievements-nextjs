@@ -1,5 +1,5 @@
-import { Loading } from '@/components/ui/Loading';
+import { Loading } from "@/components/ui/Loading";
 
 export default function PlayerLoading() {
-  return <Loading message="Loading player" />;
+	return <Loading message="Loading player" />;
 }

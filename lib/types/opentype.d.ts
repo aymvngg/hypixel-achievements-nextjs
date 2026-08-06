@@ -1,13 +1,13 @@
-declare module 'opentype.js' {
-  export interface Glyph {
-    yMin: number;
-    yMax: number;
-  }
+declare module "opentype.js" {
+	export interface Glyph {
+		yMin: number;
+		yMax: number;
+	}
 
-  export interface Font {
-    unitsPerEm: number;
-    charToGlyph(char: string): Glyph;
-  }
+	export interface Font {
+		unitsPerEm: number;
+		charToGlyph(char: string): Glyph;
+	}
 
-  export function parse(buffer: ArrayBuffer): Font;
+	export function parse(buffer: ArrayBuffer): Font;
 }

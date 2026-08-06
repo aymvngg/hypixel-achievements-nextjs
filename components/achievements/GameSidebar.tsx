@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { BlockPanel } from "@/components/ui/BlockPanel"
-import { PixelImg } from "@/components/ui/PixelImg"
-import { formatGameLabel, gameIconUrl } from "@/lib/util/games"
-import type { AchievementSearchParams } from "@/lib/search-params"
-import type { GameStat } from "@/lib/logic/achievement-stats"
+import { BlockPanel } from "@/components/ui/BlockPanel";
+import { PixelImg } from "@/components/ui/PixelImg";
+import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
+import type { AchievementSearchParams } from "@/lib/search-params";
+import type { GameStat } from "@/lib/logic/achievement-stats";
 
-const PF = "font-[family-name:var(--font-pixel)]"
+const PF = "font-[family-name:var(--font-pixel)]";
 
 function GameNavItem({
 	active,
@@ -15,13 +15,13 @@ function GameNavItem({
 	icon,
 	onSelect,
 }: {
-	active: boolean
-	label: string
-	stat: GameStat
-	icon?: string | null
-	onSelect: () => void
+	active: boolean;
+	label: string;
+	stat: GameStat;
+	icon?: string | null;
+	onSelect: () => void;
 }) {
-	const pct = stat.total > 0 ? (stat.obtained / stat.total) * 100 : 0
+	const pct = stat.total > 0 ? (stat.obtained / stat.total) * 100 : 0;
 	return (
 		<button
 			type="button"
@@ -35,13 +35,21 @@ function GameNavItem({
 		>
 			<div className="flex items-center gap-2.5 px-2 py-1.5">
 				{icon ? (
-					<PixelImg src={icon} alt="" width={28} height={28} className="shrink-0" />
+					<PixelImg
+						src={icon}
+						alt=""
+						width={28}
+						height={28}
+						className="shrink-0"
+					/>
 				) : (
 					<span className="w-7 h-7 shrink-0" />
 				)}
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2">
-						<span className={`truncate ${PF} text-xs ${active ? "text-mc-sky" : "text-foreground"}`}>
+						<span
+							className={`truncate ${PF} text-xs ${active ? "text-mc-sky" : "text-foreground"}`}
+						>
 							{label}
 						</span>
 						<span
@@ -59,7 +67,7 @@ function GameNavItem({
 				</div>
 			</div>
 		</button>
-	)
+	);
 }
 
 export function GameSidebar({
@@ -69,14 +77,16 @@ export function GameSidebar({
 	gameStats,
 	onGameSelect,
 }: {
-	games: string[]
-	params: AchievementSearchParams
-	totalStat: GameStat
-	gameStats: Record<string, GameStat>
-	onGameSelect: (game: string | undefined) => void
+	games: string[];
+	params: AchievementSearchParams;
+	totalStat: GameStat;
+	gameStats: Record<string, GameStat>;
+	onGameSelect: (game: string | undefined) => void;
 }) {
-	const sortedGames = [...games].sort((a, b) => formatGameLabel(a).localeCompare(formatGameLabel(b)))
-	const activeGame = params.game
+	const sortedGames = [...games].sort((a, b) =>
+		formatGameLabel(a).localeCompare(formatGameLabel(b)),
+	);
+	const activeGame = params.game;
 
 	return (
 		<BlockPanel className="p-2 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto">
@@ -93,12 +103,19 @@ export function GameSidebar({
 						key={game}
 						active={activeGame === game}
 						label={formatGameLabel(game)}
-						stat={gameStats[game] ?? { count: 0, obtained: 0, total: 0, completed: 0 }}
+						stat={
+							gameStats[game] ?? {
+								count: 0,
+								obtained: 0,
+								total: 0,
+								completed: 0,
+							}
+						}
 						icon={gameIconUrl(game)}
 						onSelect={() => onGameSelect(game)}
 					/>
 				))}
 			</nav>
 		</BlockPanel>
-	)
+	);
 }

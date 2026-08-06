@@ -1,5 +1,5 @@
-import { Loading } from '@/components/ui/Loading';
+import { Loading } from "@/components/ui/Loading";
 
 export default function BreakdownLoading() {
-  return <Loading message="Loading breakdown" />;
+	return <Loading message="Loading breakdown" />;
 }

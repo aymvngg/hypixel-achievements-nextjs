@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback"
+import { useRouter } from "next/navigation";
+import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 
 export function PlayerSearchInput({
 	className = "",
@@ -9,18 +9,18 @@ export function PlayerSearchInput({
 	placeholder = "Enter Minecraft username...",
 	autoFocus = true,
 }: {
-	className?: string
-	defaultValue?: string
-	placeholder?: string
-	autoFocus?: boolean
+	className?: string;
+	defaultValue?: string;
+	placeholder?: string;
+	autoFocus?: boolean;
 }) {
-	const router = useRouter()
+	const router = useRouter();
 	const prefetchPlayer = useDebouncedCallback((value: string) => {
-		const trimmed = value.trim()
+		const trimmed = value.trim();
 		if (trimmed) {
-			router.prefetch(`/player/${encodeURIComponent(trimmed)}`)
+			router.prefetch(`/player/${encodeURIComponent(trimmed)}`);
 		}
-	}, 300)
+	}, 300);
 
 	return (
 		<input
@@ -33,5 +33,5 @@ export function PlayerSearchInput({
 			autoFocus={autoFocus}
 			required
 		/>
-	)
+	);
 }

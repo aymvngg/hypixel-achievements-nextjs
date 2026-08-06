@@ -1,4 +1,4 @@
-import type { PlayerBadgeType } from "@/lib/util/special-players"
+import type { PlayerBadgeType } from "@/lib/util/special-players";
 
 const STYLES: Record<PlayerBadgeType, { label: string; className: string }> = {
 	owner: {
@@ -13,10 +13,10 @@ const STYLES: Record<PlayerBadgeType, { label: string; className: string }> = {
 		label: "Never Dies",
 		className: "bg-[#2a0f2a]/80 text-[#ff55ff] border-[#ff55ff]/50",
 	},
-}
+};
 
 export function PlayerBadge({ type }: { type: PlayerBadgeType }) {
-	const { label, className } = STYLES[type]
+	const { label, className } = STYLES[type];
 	return (
 		<span
 			className={`inline-flex items-center px-1.5 py-0.5 text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase tracking-wide border rounded-sm align-middle ${className}`}
@@ -24,5 +24,5 @@ export function PlayerBadge({ type }: { type: PlayerBadgeType }) {
 		>
 			{label}
 		</span>
-	)
+	);
 }

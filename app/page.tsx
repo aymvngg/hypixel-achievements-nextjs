@@ -1,9 +1,9 @@
-import Link from "next/link"
-import { PlayerSearch } from "@/components/home/PlayerSearch"
-import { BlockPanel } from "@/components/ui/BlockPanel"
-import { PixelButton } from "@/components/ui/PixelButton"
-import { PixelImg } from "@/components/ui/PixelImg"
-import { ALL_GAME_KEYS, formatGameLabel, gameIconUrl } from "@/lib/util/games"
+import Link from "next/link";
+import { PlayerSearch } from "@/components/home/PlayerSearch";
+import { BlockPanel } from "@/components/ui/BlockPanel";
+import { PixelButton } from "@/components/ui/PixelButton";
+import { PixelImg } from "@/components/ui/PixelImg";
+import { ALL_GAME_KEYS, formatGameLabel, gameIconUrl } from "@/lib/util/games";
 
 const features = [
 	{
@@ -18,12 +18,14 @@ const features = [
 		title: "Compare",
 		body: "Head-to-head AP comparison between any two players.",
 	},
-]
+];
 
 export default async function HomePage() {
-	"use cache"
+	"use cache";
 
-	const gameKeys = ALL_GAME_KEYS.filter((k) => k !== "general" && k !== "skyclash")
+	const gameKeys = ALL_GAME_KEYS.filter(
+		(k) => k !== "general" && k !== "skyclash",
+	);
 
 	return (
 		<div className="space-y-8 py-8">
@@ -35,20 +37,26 @@ export default async function HomePage() {
 				</p>
 				<div className="flex flex-wrap justify-center gap-2">
 					{gameKeys.map((key) => {
-						const icon = gameIconUrl(key)
-						if (!icon) return null
+						const icon = gameIconUrl(key);
+						if (!icon) return null;
 						return (
 							<span
 								key={key}
 								title={formatGameLabel(key)}
 								className="flex items-center gap-1.5 px-2 py-1 rounded-sm border-2 border-mc-border bg-mc-stone-dark"
 							>
-								<PixelImg src={icon} alt="" width={16} height={16} className="shrink-0" />
+								<PixelImg
+									src={icon}
+									alt=""
+									width={16}
+									height={16}
+									className="shrink-0"
+								/>
 								<span className="text-[0.65rem] font-[family-name:var(--font-pixel)] text-foreground">
 									{formatGameLabel(key)}
 								</span>
 							</span>
-						)
+						);
 					})}
 				</div>
 			</div>
@@ -61,5 +69,5 @@ export default async function HomePage() {
 				</Link>
 			</div>
 		</div>
-	)
+	);
 }

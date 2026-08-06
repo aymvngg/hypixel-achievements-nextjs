@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #2d2d2d;
-  --color-foreground: #e8e8e8;
-  --color-mc-stone: #5a5a5a;
-  --color-mc-stone-dark: #3c3c3c;
-  --color-mc-stone-light: #7a7a7a;
-  --color-mc-grass: #5d8c3e;
-  --color-mc-grass-dark: #4a7032;
-  --color-mc-dirt: #8b6914;
-  --color-mc-gold: #ffaa00;
-  --color-mc-red: #aa3333;
-  --color-mc-sky: #87ceeb;
-  --color-mc-panel: #4a4a4a;
-  --color-mc-border: #1a1a1a;
-  --color-mc-purple: #9b59b6;
-  --color-mc-diamond: #55ffff;
-  --color-mc-emerald: #2ecc71;
-  --color-mc-lapis: #3498db;
-  --font-sans: var(--font-body);
-  --font-display: var(--font-pixel);
+	--color-background: #2d2d2d;
+	--color-foreground: #e8e8e8;
+	--color-mc-stone: #5a5a5a;
+	--color-mc-stone-dark: #3c3c3c;
+	--color-mc-stone-light: #7a7a7a;
+	--color-mc-grass: #5d8c3e;
+	--color-mc-grass-dark: #4a7032;
+	--color-mc-dirt: #8b6914;
+	--color-mc-gold: #ffaa00;
+	--color-mc-red: #aa3333;
+	--color-mc-sky: #87ceeb;
+	--color-mc-panel: #4a4a4a;
+	--color-mc-border: #1a1a1a;
+	--color-mc-purple: #9b59b6;
+	--color-mc-diamond: #55ffff;
+	--color-mc-emerald: #2ecc71;
+	--color-mc-lapis: #3498db;
+	--font-sans: var(--font-body);
+	--font-display: var(--font-pixel);
 }

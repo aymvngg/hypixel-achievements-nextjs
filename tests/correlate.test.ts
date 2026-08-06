@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest"
-import type { Achievements } from "hypixel-api-reborn"
-import type { PlayerData } from "@/lib/hypixel/types"
-import { correlateAchievements } from "@/lib/hypixel/correlate"
+import { describe, it, expect } from "vitest";
+import type { Achievements } from "hypixel-api-reborn";
+import type { PlayerData } from "@/lib/hypixel/types";
+import { correlateAchievements } from "@/lib/hypixel/correlate";
 
 const achievements = {
 	achievementsPerGame: {
@@ -34,7 +34,7 @@ const achievements = {
 			],
 		},
 	},
-} as unknown as Achievements
+} as unknown as Achievements;
 
 function player(overrides: Partial<PlayerData> = {}): PlayerData {
 	return {
@@ -48,16 +48,19 @@ function player(overrides: Partial<PlayerData> = {}): PlayerData {
 		tieredAchievements: {},
 		oneTimeAchievements: [],
 		...overrides,
-	}
+	};
 }
 
 describe("correlateAchievements", () => {
 	it("marks one-time achievements completed from achievementsOneTime", () => {
-		const views = correlateAchievements(achievements, player({ oneTimeAchievements: ["skyblock_first_join"] }))
-		const firstJoin = views.find((v) => v.codeName === "FIRST_JOIN")
-		expect(firstJoin?.completed).toBe(true)
-		expect(firstJoin?.obtainedPoints).toBe(5)
-	})
+		const views = correlateAchievements(
+			achievements,
+			player({ oneTimeAchievements: ["skyblock_first_join"] }),
+		);
+		const firstJoin = views.find((v) => v.codeName === "FIRST_JOIN");
+		expect(firstJoin?.completed).toBe(true);
+		expect(firstJoin?.obtainedPoints).toBe(5);
+	});
 
 	it("does not mark one-time achievements completed from tieredAchievements alone", () => {
 		const views = correlateAchievements(
@@ -66,33 +69,42 @@ describe("correlateAchievements", () => {
 				tieredAchievements: { skyblockFirstJoin: 1 },
 				oneTimeAchievements: [],
 			}),
-		)
-		const firstJoin = views.find((v) => v.codeName === "FIRST_JOIN")
-		expect(firstJoin?.completed).toBe(false)
-		expect(firstJoin?.obtainedPoints).toBe(0)
-	})
+		);
+		const firstJoin = views.find((v) => v.codeName === "FIRST_JOIN");
+		expect(firstJoin?.completed).toBe(false);
+		expect(firstJoin?.obtainedPoints).toBe(0);
+	});
 
 	it("marks tiered achievements completed from tieredAchievements progress", () => {
-		const views = correlateAchievements(achievements, player({ tieredAchievements: { skyblockCollections: 100 } }))
-		const collections = views.find((v) => v.codeName === "COLLECTIONS")
-		expect(collections?.completed).toBe(true)
-		expect(collections?.currentTier).toBe(2)
-		expect(collections?.obtainedPoints).toBe(25)
-	})
+		const views = correlateAchievements(
+			achievements,
+			player({ tieredAchievements: { skyblockCollections: 100 } }),
+		);
+		const collections = views.find((v) => v.codeName === "COLLECTIONS");
+		expect(collections?.completed).toBe(true);
+		expect(collections?.currentTier).toBe(2);
+		expect(collections?.obtainedPoints).toBe(25);
+	});
 
 	it("counts partial tier AP without marking tiered achievement completed", () => {
-		const views = correlateAchievements(achievements, player({ tieredAchievements: { skyblockCollections: 10 } }))
-		const collections = views.find((v) => v.codeName === "COLLECTIONS")
-		expect(collections?.completed).toBe(false)
-		expect(collections?.currentTier).toBe(1)
-		expect(collections?.obtainedPoints).toBe(5)
-		expect(collections?.tierTarget).toBe(100)
-		expect(collections?.tierProgress).toBe(0.1)
-	})
+		const views = correlateAchievements(
+			achievements,
+			player({ tieredAchievements: { skyblockCollections: 10 } }),
+		);
+		const collections = views.find((v) => v.codeName === "COLLECTIONS");
+		expect(collections?.completed).toBe(false);
+		expect(collections?.currentTier).toBe(1);
+		expect(collections?.obtainedPoints).toBe(5);
+		expect(collections?.tierTarget).toBe(100);
+		expect(collections?.tierProgress).toBe(0.1);
+	});
 
 	it("computes tier progress as current stat over next tier target", () => {
-		const views = correlateAchievements(achievements, player({ tieredAchievements: { skyblockCollections: 75 } }))
-		const collections = views.find((v) => v.codeName === "COLLECTIONS")
-		expect(collections?.tierProgress).toBe(0.75)
-	})
-})
+		const views = correlateAchievements(
+			achievements,
+			player({ tieredAchievements: { skyblockCollections: 75 } }),
+		);
+		const collections = views.find((v) => v.codeName === "COLLECTIONS");
+		expect(collections?.tierProgress).toBe(0.75);
+	});
+});
