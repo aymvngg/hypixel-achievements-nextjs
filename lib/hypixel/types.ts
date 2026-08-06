@@ -19,6 +19,54 @@ export interface AchievementView {
 	tierProgress: number;
 }
 
+export interface PlayerQuestCompletion {
+	/** Hypixel API field for completion time (epoch ms). */
+	time?: number;
+	/** Legacy/alternate field name used in some parsers. */
+	timeCompleted?: number;
+}
+
+export interface PlayerQuestEntry {
+	active?: {
+		started?: number;
+		objectives?: Record<string, number>;
+	};
+	completions?: PlayerQuestCompletion[];
+}
+
+export type PlayerQuestData = Record<string, PlayerQuestEntry>;
+
+export type QuestResetType = "DAILY" | "WEEKLY" | "MONTHLY";
+
+export type QuestStatus = "active" | "completed" | "available";
+
+export interface QuestObjectiveView {
+	id: string;
+	target: number;
+	progress: number;
+	completed: boolean;
+}
+
+export interface QuestRewardView {
+	type: string;
+	amount: number;
+}
+
+export interface QuestView {
+	game: string;
+	questId: string;
+	name: string;
+	description: string;
+	type: QuestResetType;
+	objectives: QuestObjectiveView[];
+	rewards: QuestRewardView[];
+	status: QuestStatus;
+	startedAt?: number;
+	completedAt?: number;
+	/** Aggregate progress across objectives, 0–1. */
+	progress: number;
+}
+
 export interface PlayerData {
 	uuid: string;
 	nickname: string;
@@ -32,6 +80,7 @@ export interface PlayerData {
 	achievementPoints: number;
 	tieredAchievements: Record<string, number>;
 	oneTimeAchievements: string[];
+	quests: PlayerQuestData;
 }
 
 /** The player fields required by the browser UI. Keep achievement state server-only. */

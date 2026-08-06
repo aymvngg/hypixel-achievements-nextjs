@@ -13,6 +13,7 @@ describe("toPublicPlayerData", () => {
 			achievementPoints: 1234,
 			tieredAchievements: { example: 10 },
 			oneTimeAchievements: ["example"],
+			quests: {},
 		};
 
 		expect(toPublicPlayerData(player)).toEqual({

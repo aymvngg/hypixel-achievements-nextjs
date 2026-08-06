@@ -5,9 +5,14 @@ import type { Achievements } from "hypixel-api-reborn";
 import { Player } from "hypixel-api-reborn";
 import { getHypixelClient } from "@/lib/hypixel/client";
 import { correlateAchievements, getGameNames } from "@/lib/hypixel/correlate";
+import type { RawQuestsResponse } from "@/lib/hypixel/correlate-quests";
 import { isUuid, normalizeUuid } from "@/lib/util/validate";
 import { withRetry } from "@/lib/hypixel/retry";
-import type { AchievementView, PlayerData } from "@/lib/hypixel/types";
+import type {
+	AchievementView,
+	PlayerData,
+	PlayerQuestData,
+} from "@/lib/hypixel/types";
 import { toPublicPlayerData } from "@/lib/hypixel/types";
 import { sumObtainedPoints } from "@/lib/hypixel/types";
 
@@ -55,6 +60,11 @@ function toCacheable<T>(value: T): T {
 	return structuredClone(value);
 }
 
+function parsePlayerQuests(raw: unknown): PlayerQuestData {
+	if (!raw || typeof raw !== "object") return {};
+	return raw as PlayerQuestData;
+}
+
 function parsePlayerData(rawRes: RawPlayerResponse): PlayerData {
 	if (!rawRes.player) {
 		throw new Error(
@@ -79,7 +89,22 @@ function parsePlayerData(rawRes: RawPlayerResponse): PlayerData {
 		achievementPoints: player.achievementPoints,
 		tieredAchievements: tiered,
 		oneTimeAchievements: oneTime,
+		quests: parsePlayerQuests(rawRes.player.quests),
 	};
+}
+
+async function loadQuests(): Promise<RawQuestsResponse> {
+	"use cache: remote";
+	cacheLife("hypixelAchievements");
+
+	const client = getHypixelClient();
+	const res = (await withRetry(() =>
+		client.getQuests({ raw: true }),
+	)) as unknown as RawQuestsResponse & { success?: boolean };
+
+	return toCacheable({
+		quests: res.quests ?? {},
+	});
 }
 
 async function loadAchievements(): Promise<Achievements> {
@@ -126,6 +151,10 @@ async function loadPlayerByUuid(uuid: string): Promise<PlayerData> {
 
 export async function fetchAchievements(): Promise<Achievements> {
 	return dedupe("achievements", loadAchievements);
+}
+
+export async function fetchQuests(): Promise<RawQuestsResponse> {
+	return dedupe("quests", loadQuests);
 }
 
 export async function fetchPlayer(query: string): Promise<PlayerData> {

@@ -47,6 +47,7 @@ function player(overrides: Partial<PlayerData> = {}): PlayerData {
 		achievementPoints: 0,
 		tieredAchievements: {},
 		oneTimeAchievements: [],
+		quests: {},
 		...overrides,
 	};
 }

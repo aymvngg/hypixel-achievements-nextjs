@@ -5,7 +5,7 @@ export function PlayerNav({
 	activeSection,
 }: {
 	username: string;
-	activeSection: "achievements" | "breakdown";
+	activeSection: "achievements" | "breakdown" | "quests";
 }) {
 	const encoded = encodeURIComponent(username);
 	const base = `/player/${encoded}`;
@@ -40,6 +40,19 @@ export function PlayerNav({
 				}`}
 			>
 				📊 Breakdown
+			</Link>
+			<Link
+				href={`${base}/quests`}
+				aria-current={
+					activeSection === "quests" ? "page" : undefined
+				}
+				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
+					activeSection === "quests"
+						? "bg-mc-grass text-white"
+						: "text-mc-stone-light hover:text-foreground"
+				}`}
+			>
+				📜 Quests
 			</Link>
 		</nav>
 	);

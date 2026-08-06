@@ -8,6 +8,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 
 - **Player search** — look up any player by username or UUID.
 - **Achievement browser** — filter by game, type (one-time/tiered), and status (completed/uncompleted); search by name; sort by points, progress, global or per-game unlock percentage.
+- **Quest tracker** — browse daily, weekly, and monthly quests per game with live progress from the Hypixel API.
 - **AP breakdown** — a per-game table of obtained vs. missing achievement points, completion counts, and totals.
 - **Player comparison** — head-to-head AP comparison across every game, sorted by obtained or missing points, with a plain-language verdict.
 - **Rank display** — formatted player ranks and prefixes.
@@ -20,6 +21,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 | `/`                            | Landing page with player search              |
 | `/player/[username]`           | Achievement browser with filters and sorting |
 | `/player/[username]/breakdown` | Per-game achievement points breakdown        |
+| `/player/[username]/quests`    | Per-game daily, weekly, and monthly quests   |
 | `/compare?p1=&p2=&metric=`     | Compare two players                          |
 
 ## Stack
