@@ -116,6 +116,13 @@ function buildRankPrefixSegments(
 			const base = RANK_COLORS[rank]
 			return [{ text: `[${rank}] `, color: base }]
 		}
+		case "YouTube": {
+			return [
+				{ text: "[", color: RANK_COLORS.YouTube },
+				{ text: "YOUTUBE", color: HYPIXEL_HEX.WHITE },
+				{ text: "] ", color: RANK_COLORS.YouTube },
+			]
+		}
 		default: {
 			const base = RANK_COLORS[rank] ?? RANK_COLORS.Default
 			return [{ text: `[${rank}] `, color: base }]
@@ -174,7 +181,7 @@ export function getNicknameColor(
 			// /rankcolor tag choice (monthlyRankColor): gold or aqua — nickname matches the tag
 			return rankPrefixColorHex ?? HYPIXEL_HEX.GOLD
 		case "YouTube":
-			return HYPIXEL_HEX.WHITE
+			return HYPIXEL_HEX.RED
 		case "Game Master":
 			return HYPIXEL_HEX.DARK_GREEN
 		case "Admin":

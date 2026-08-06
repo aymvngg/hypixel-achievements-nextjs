@@ -20,6 +20,12 @@ describe("formatRankPrefix", () => {
 		expect(segments.find((s) => s.text === "+")?.color).toBe(HYPIXEL_HEX.GOLD)
 		expect(segments.find((s) => s.text === "[VIP")?.color).toBe(HYPIXEL_HEX.GREEN)
 	})
+
+	it("renders YouTube in uppercase red", () => {
+		const segments = formatRankPrefix("YouTube")
+		expect(segments.map((s) => s.text).join("")).toBe("[YOUTUBE] ")
+		expect(segments.map((s) => s.color)).toEqual([HYPIXEL_HEX.RED, HYPIXEL_HEX.WHITE, HYPIXEL_HEX.RED])
+	})
 })
 
 describe("hasDisplayableRank", () => {
@@ -45,6 +51,10 @@ describe("getNicknameColor", () => {
 	it("uses gray for default players", () => {
 		expect(getNicknameColor(null)).toBe(HYPIXEL_HEX.GRAY)
 		expect(getNicknameColor("Default")).toBe(HYPIXEL_HEX.GRAY)
+	})
+
+	it("renders YouTube nicknames red", () => {
+		expect(getNicknameColor("YouTube")).toBe(HYPIXEL_HEX.RED)
 	})
 
 	it("keeps INNIT nicknames purple", () => {

@@ -68,6 +68,14 @@ export function RankPrefix({
 		case "VIP":
 		case "MVP":
 			return <span style={{ color: RANK_COLORS[rank] }}>[{rank}] </span>
+		case "YouTube":
+			return (
+				<span>
+					<span style={{ color: RANK_COLORS.YouTube }}>[</span>
+					<span style={{ color: HYPIXEL_HEX.WHITE }}>YOUTUBE</span>
+					<span style={{ color: RANK_COLORS.YouTube }}>] </span>
+				</span>
+			)
 		default:
 			return <span style={{ color: RANK_COLORS[rank] ?? RANK_COLORS.Default }}>[{rank}] </span>
 	}
