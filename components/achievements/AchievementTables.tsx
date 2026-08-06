@@ -202,7 +202,9 @@ function AchievementTable({
             <table className="w-full table-fixed border-collapse relative">
               <thead className="sticky top-0 z-10">
                   <tr>
-                    <th className={`p-2.5 ${TH} w-[4%]`}>Game</th>
+                    <th className={`p-2.5 ${TH} w-[4%]`}>
+                      <span className="sr-only">Game</span>
+                    </th>
                     <SortableHeader
                       username={username}
                       params={params}
