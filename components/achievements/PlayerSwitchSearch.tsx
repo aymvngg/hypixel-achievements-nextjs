@@ -22,7 +22,7 @@ export function PlayerSwitchSearch({
 
 		const query = validatePlayerQuery(raw);
 		const currentQuery = searchParams.toString();
-		const nextUrl = `/player/${encodeURIComponent(query)}${currentQuery ? `?${currentQuery}` : ""}`;
+		const nextUrl = `/player/${encodeURIComponent(query)}/achievements${currentQuery ? `?${currentQuery}` : ""}`;
 		router.push(nextUrl);
 	}
 

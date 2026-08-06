@@ -18,7 +18,9 @@ export function PlayerSearchInput({
 	const prefetchPlayer = useDebouncedCallback((value: string) => {
 		const trimmed = value.trim();
 		if (trimmed) {
-			router.prefetch(`/player/${encodeURIComponent(trimmed)}`);
+			router.prefetch(
+				`/player/${encodeURIComponent(trimmed)}/achievements`,
+			);
 		}
 	}, 300);
 

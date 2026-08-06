@@ -8,5 +8,5 @@ export async function searchPlayer(formData: FormData) {
 	if (typeof raw !== "string") return;
 
 	const query = validatePlayerQuery(raw);
-	redirect(`/player/${encodeURIComponent(query)}`);
+	redirect(`/player/${encodeURIComponent(query)}/achievements`);
 }

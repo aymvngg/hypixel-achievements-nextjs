@@ -61,7 +61,7 @@ export function playerAchievementsHref(
 	current: AchievementSearchParams,
 	updates: Partial<AchievementSearchParams> = {},
 ): string {
-	const base = `/player/${encodeURIComponent(username)}`;
+	const base = `/player/${encodeURIComponent(username)}/achievements`;
 	const params = buildAchievementSearchParams(current, updates);
 	const qs = params.toString();
 	return qs ? `${base}?${qs}` : base;

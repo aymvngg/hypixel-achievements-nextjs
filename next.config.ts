@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
 	reactCompiler: true,
 	output: "standalone",
 	cacheComponents: true,
+	async redirects() {
+		return [
+			{
+				source: "/player/:username",
+				destination: "/player/:username/achievements",
+				permanent: true,
+			},
+		];
+	},
 	cacheHandlers: {
 		remote: require.resolve("./cache-handlers/disk-handler.js"),
 	},

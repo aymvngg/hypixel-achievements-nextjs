@@ -16,7 +16,7 @@ export function PlayerNav({
 			aria-label="Player sections"
 		>
 			<Link
-				href={base}
+				href={`${base}/achievements`}
 				aria-current={
 					activeSection === "achievements" ? "page" : undefined
 				}
