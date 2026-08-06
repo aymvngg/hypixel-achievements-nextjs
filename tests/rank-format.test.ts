@@ -26,6 +26,12 @@ describe("formatRankPrefix", () => {
 		expect(segments.map((s) => s.text).join("")).toBe("[YOUTUBE] ")
 		expect(segments.map((s) => s.color)).toEqual([HYPIXEL_HEX.RED, HYPIXEL_HEX.WHITE, HYPIXEL_HEX.RED])
 	})
+
+	it("renders STAFF as the H glyph prefix", () => {
+		const segments = formatRankPrefix("STAFF")
+		expect(segments.map((s) => s.text).join("")).toBe("[ዞ] ")
+		expect(segments.map((s) => s.color)).toEqual([HYPIXEL_HEX.RED, HYPIXEL_HEX.GOLD, HYPIXEL_HEX.RED])
+	})
 })
 
 describe("hasDisplayableRank", () => {
@@ -55,6 +61,10 @@ describe("getNicknameColor", () => {
 
 	it("renders YouTube nicknames red", () => {
 		expect(getNicknameColor("YouTube")).toBe(HYPIXEL_HEX.RED)
+	})
+
+	it("renders STAFF nicknames red", () => {
+		expect(getNicknameColor("STAFF")).toBe(HYPIXEL_HEX.RED)
 	})
 
 	it("keeps INNIT nicknames purple", () => {

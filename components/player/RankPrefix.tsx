@@ -76,6 +76,14 @@ export function RankPrefix({
 					<span style={{ color: RANK_COLORS.YouTube }}>] </span>
 				</span>
 			)
+		case "STAFF":
+			return (
+				<span>
+					<span style={{ color: HYPIXEL_HEX.RED }}>[</span>
+					<span style={{ color: HYPIXEL_HEX.GOLD }}>ዞ</span>
+					<span style={{ color: HYPIXEL_HEX.RED }}>] </span>
+				</span>
+			)
 		default:
 			return <span style={{ color: RANK_COLORS[rank] ?? RANK_COLORS.Default }}>[{rank}] </span>
 	}

@@ -40,6 +40,12 @@ function colorHex(color: { toHex: () => string } | null | undefined): string | n
 	return color?.toHex() ?? null
 }
 
+function normalizeRank(rawRes: RawPlayerResponse, parsedRank: string | null): string | null {
+	const rawRank = rawRes.player?.rank
+	if (rawRank === "STAFF") return "STAFF"
+	return parsedRank
+}
+
 function toCacheable<T>(value: T): T {
 	return structuredClone(value)
 }
@@ -50,13 +56,13 @@ function parsePlayerData(rawRes: RawPlayerResponse): PlayerData {
 	}
 
 	const player = new Player(rawRes.player)
-	const tiered = player.achievements as Record<string, number>
+	const tiered = (player.achievements ?? {}) as Record<string, number>
 	const oneTime: string[] = rawRes.player.achievementsOneTime ?? []
 
 	return {
 		uuid: normalizeUuid(player.uuid),
 		nickname: player.nickname,
-		rank: player.rank as string | null,
+		rank: normalizeRank(rawRes, player.rank as string | null),
 		rankPrefix: typeof rawRes.player.prefix === "string" ? rawRes.player.prefix : null,
 		rankPlusColor: colorHex(player.plusColor),
 		rankPrefixColor: colorHex(player.prefixColor),

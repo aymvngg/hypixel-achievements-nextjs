@@ -123,6 +123,13 @@ function buildRankPrefixSegments(
 				{ text: "] ", color: RANK_COLORS.YouTube },
 			]
 		}
+		case "STAFF": {
+			return [
+				{ text: "[", color: HYPIXEL_HEX.RED },
+				{ text: "ዞ", color: HYPIXEL_HEX.GOLD },
+				{ text: "] ", color: HYPIXEL_HEX.RED },
+			]
+		}
 		default: {
 			const base = RANK_COLORS[rank] ?? RANK_COLORS.Default
 			return [{ text: `[${rank}] `, color: base }]
@@ -185,6 +192,8 @@ export function getNicknameColor(
 		case "Game Master":
 			return HYPIXEL_HEX.DARK_GREEN
 		case "Admin":
+			return HYPIXEL_HEX.RED
+		case "STAFF":
 			return HYPIXEL_HEX.RED
 		case "PIG+++":
 			return HYPIXEL_HEX.LIGHT_PURPLE
