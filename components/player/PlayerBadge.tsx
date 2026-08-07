@@ -24,6 +24,10 @@ export const PLAYER_TAG_STYLES: Record<
 		label: "BORED",
 		color: "#ff5555",
 	},
+	ladybug: {
+		label: "LADYBUG",
+		color: "#c1fefa",
+	},
 };
 
 const STYLES = PLAYER_TAG_STYLES;

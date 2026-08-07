@@ -5,7 +5,8 @@ export type PlayerBadgeType =
 	| "mommy"
 	| "owner"
 	| "technoblade"
-	| "bored";
+	| "bored"
+	| "ladybug";
 
 function normalize(uuid: string): string {
 	return uuid.toLowerCase().replace(/-/g, "");
@@ -16,6 +17,7 @@ const EARLY_TESTERS = new Set(data.earlyTesters.map(normalize));
 const MOMMIES = new Set(data.mommies.map(normalize));
 const TECHNOBLADE = new Set(data.technoblade.map(normalize));
 const BORED = new Set(data.bored.map(normalize));
+const LADYBUGS = new Set(data.ladybugs.map(normalize));
 
 export function getPlayerBadge(uuid: string): PlayerBadgeType | null {
 	const id = normalize(uuid);
@@ -24,5 +26,6 @@ export function getPlayerBadge(uuid: string): PlayerBadgeType | null {
 	if (EARLY_TESTERS.has(id)) return "early-tester";
 	if (TECHNOBLADE.has(id)) return "technoblade";
 	if (BORED.has(id)) return "bored";
+	if (LADYBUGS.has(id)) return "ladybug";
 	return null;
 }
