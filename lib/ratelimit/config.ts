@@ -37,15 +37,15 @@ export function getRateLimitConfig(): RateLimitConfig {
 	if (cached) return cached;
 	cached = {
 		perIpWindowMs: intFromEnv("RATE_LIMIT_PER_IP_WINDOW_MS", 60_000),
-		perIpMax: intFromEnv("RATE_LIMIT_PER_IP_MAX", 60),
+		perIpMax: intFromEnv("RATE_LIMIT_PER_IP_MAX", 120),
 		perPlayerWindowMs: intFromEnv(
 			"RATE_LIMIT_PLAYER_WINDOW_MS",
 			3_600_000,
 		),
-		perPlayerMax: intFromEnv("RATE_LIMIT_PLAYER_MAX", 15),
+		perPlayerMax: intFromEnv("RATE_LIMIT_PLAYER_MAX", 60),
 		distinctPlayersPerIpMax: intFromEnv(
 			"RATE_LIMIT_DISTINCT_PLAYERS_PER_IP",
-			20,
+			120,
 		),
 		disabled: boolFromEnv("RATE_LIMIT_DISABLED", false),
 	};

@@ -81,15 +81,15 @@ function boolFromEnv(name: string, fallback: boolean): boolean {
 }
 
 const PER_IP_WINDOW_MS = intFromEnv("RATE_LIMIT_PER_IP_WINDOW_MS", 60_000);
-const PER_IP_MAX = intFromEnv("RATE_LIMIT_PER_IP_MAX", 60);
+const PER_IP_MAX = intFromEnv("RATE_LIMIT_PER_IP_MAX", 120);
 const PER_PLAYER_WINDOW_MS = intFromEnv(
 	"RATE_LIMIT_PLAYER_WINDOW_MS",
 	3_600_000,
 );
-const PER_PLAYER_MAX = intFromEnv("RATE_LIMIT_PLAYER_MAX", 15);
+const PER_PLAYER_MAX = intFromEnv("RATE_LIMIT_PLAYER_MAX", 60);
 const DISTINCT_PLAYERS_MAX = intFromEnv(
 	"RATE_LIMIT_DISTINCT_PLAYERS_PER_IP",
-	20,
+	120,
 );
 const DISABLED = boolFromEnv("RATE_LIMIT_DISABLED", false);
 
