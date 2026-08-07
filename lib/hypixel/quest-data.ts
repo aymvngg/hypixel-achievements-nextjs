@@ -19,10 +19,10 @@ export interface QuestPageData {
 }
 
 export const getPlayerQuestPageData = cache(
-	async (query: string): Promise<QuestPageData> => {
+	async (query: string, ip: string): Promise<QuestPageData> => {
 		const [questDefs, player] = await Promise.all([
-			fetchQuests(),
-			fetchPlayer(query),
+			fetchQuests(ip),
+			fetchPlayer(query, ip),
 		]);
 
 		const views = correlateQuests(questDefs, player.quests);

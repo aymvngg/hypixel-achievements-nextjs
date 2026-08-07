@@ -19,6 +19,7 @@ import { validatePlayerQuery } from "@/lib/util/validate";
 export async function getComparePageData(
 	p1: string,
 	p2: string,
+	ip: string,
 	metric: CompareMetric = "obtained",
 ): Promise<CompareApiResponse> {
 	const p1Query = validatePlayerQuery(p1);
@@ -29,9 +30,9 @@ export async function getComparePageData(
 	}
 
 	const [catalog, player1, player2] = await Promise.all([
-		fetchAchievements(),
-		fetchPlayer(p1Query),
-		fetchPlayer(p2Query),
+		fetchAchievements(ip),
+		fetchPlayer(p1Query, ip),
+		fetchPlayer(p2Query, ip),
 	]);
 
 	const p1Views = correlateAchievements(

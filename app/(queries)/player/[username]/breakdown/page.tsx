@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import { BreakdownTable } from "@/components/breakdown/BreakdownTable";
 import { AchievementSummaryStrip } from "@/components/achievements/AchievementSummaryStrip";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
+import { RateLimitPanel } from "@/components/ui/RateLimitPanel";
 import { getPlayerPageData } from "@/lib/hypixel/player-data";
 import { computeGameBreakdown, sortGameBreakdown } from "@/lib/logic/breakdown";
 import { summarizeAchievementViews } from "@/lib/logic/achievement-stats";
 import { getDisplayName } from "@/lib/util/display";
 import { formatError } from "@/lib/util/errors";
+import { CLIENT_IP_HEADER } from "@/lib/ratelimit/ip";
+import { isRateLimitError } from "@/lib/ratelimit/check";
 
 export async function generateMetadata({
 	params,
@@ -20,7 +24,8 @@ export async function generateMetadata({
 	const { username } = await params;
 	const decoded = decodeURIComponent(username);
 	try {
-		const data = await getPlayerPageData(decoded);
+		const ip = (await headers()).get(CLIENT_IP_HEADER) ?? "unknown";
+		const data = await getPlayerPageData(decoded, ip);
 		const name = getDisplayName(data.player, decoded);
 		return { title: `${name}'s Breakdown` };
 	} catch {
@@ -38,7 +43,8 @@ async function PlayerBreakdownContent({
 	let result;
 	try {
 		const decoded = decodeURIComponent(username);
-		const data = await getPlayerPageData(decoded);
+		const ip = (await headers()).get(CLIENT_IP_HEADER) ?? "unknown";
+		const data = await getPlayerPageData(decoded, ip);
 		const rows = sortGameBreakdown(
 			computeGameBreakdown(data.views),
 			"obtained",
@@ -46,6 +52,9 @@ async function PlayerBreakdownContent({
 		const summary = summarizeAchievementViews(data.views);
 		result = { decoded, player: data.player, rows, summary };
 	} catch (err) {
+		if (isRateLimitError(err)) {
+			return <RateLimitPanel retryAfterSec={err.retryAfterSec} />;
+		}
 		return (
 			<ErrorPanel
 				title="Couldn't load breakdown"

@@ -1,18 +1,26 @@
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import { CompareForm } from "@/components/compare/CompareForm";
 import { CompareGameCards } from "@/components/compare/CompareGameCards";
 import { CompareSummary } from "@/components/compare/CompareSummary";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
+import { RateLimitPanel } from "@/components/ui/RateLimitPanel";
 import { getComparePageData } from "@/lib/hypixel/compare-data";
 import { shortName } from "@/lib/util/display";
 import { formatError } from "@/lib/util/errors";
+import { CLIENT_IP_HEADER } from "@/lib/ratelimit/ip";
+import { isRateLimitError } from "@/lib/ratelimit/check";
 
 async function CompareResults({ p1, p2 }: { p1: string; p2: string }) {
 	let data;
 	try {
-		data = await getComparePageData(p1, p2, "obtained");
+		const ip = (await headers()).get(CLIENT_IP_HEADER) ?? "unknown";
+		data = await getComparePageData(p1, p2, ip, "obtained");
 	} catch (err) {
+		if (isRateLimitError(err)) {
+			return <RateLimitPanel retryAfterSec={err.retryAfterSec} />;
+		}
 		return (
 			<ErrorPanel
 				title="Couldn't compare players"

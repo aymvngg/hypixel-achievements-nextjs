@@ -10,6 +10,7 @@ import { correlateAchievements, getGameNames } from "@/lib/hypixel/correlate";
 import type { RawQuestsResponse } from "@/lib/hypixel/correlate-quests";
 import { isUuid, normalizeUuid } from "@/lib/util/validate";
 import { withRetry } from "@/lib/hypixel/retry";
+import { guardUpstream } from "@/lib/ratelimit/check";
 import type {
 	AchievementView,
 	CacheResult,
@@ -190,26 +191,42 @@ async function loadPlayerByUuid(
 	}
 }
 
-export async function fetchAchievements(): Promise<AchievementCatalog> {
+export async function fetchAchievements(ip: string): Promise<AchievementCatalog> {
 	return dedupe("achievements", async () => {
+		guardUpstream({ ip, playerKey: "achievements", cacheWindowMs: 86_400_000 });
 		const result = await loadAchievements();
 		if (!result.ok) throw new Error(result.error);
 		return result.data;
 	});
 }
 
-export async function fetchQuests(): Promise<RawQuestsResponse> {
+export async function fetchQuests(ip: string): Promise<RawQuestsResponse> {
 	return dedupe("quests", async () => {
+		guardUpstream({ ip, playerKey: "quests", cacheWindowMs: 86_400_000 });
 		const result = await loadQuests();
 		if (!result.ok) throw new Error(result.error);
 		return result.data;
 	});
 }
 
-export async function fetchPlayer(query: string): Promise<PlayerData> {
+export async function fetchPlayer(
+	query: string,
+	ip: string,
+): Promise<PlayerData> {
 	const key = `player:${query.trim().toLowerCase()}`;
 	return dedupe(key, async () => {
 		const normalizedQuery = query.trim();
+		const playerKey = normalizedQuery.toLowerCase();
+		// UUID lookups are cached for 6h; name lookups resolve to a UUID first
+		// (Mojang fetch) then hit the player cache. Treat the player loader as
+		// warm for its 5-minute cacheLife so cache hits don't burn budget.
+		guardUpstream({
+			ip,
+			playerKey: isUuid(normalizedQuery)
+				? `player:${normalizeUuid(playerKey)}`
+				: playerKey,
+			cacheWindowMs: 300_000,
+		});
 		let uuid: string;
 		if (isUuid(normalizedQuery)) {
 			uuid = normalizeUuid(normalizedQuery);

@@ -11,10 +11,11 @@ import {
 
 export async function getPlayerPageData(
 	query: string,
+	ip: string,
 ): Promise<PlayerApiResponse> {
 	const [catalog, player] = await Promise.all([
-		fetchAchievements(),
-		fetchPlayer(query),
+		fetchAchievements(ip),
+		fetchPlayer(query, ip),
 	]);
 
 	return {
