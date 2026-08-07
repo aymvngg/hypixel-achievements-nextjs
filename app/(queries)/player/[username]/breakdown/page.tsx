@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { BreakdownTable } from "@/components/breakdown/BreakdownTable";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
-import { BlockPanel } from "@/components/ui/BlockPanel";
+import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
 import { getPlayerPageData } from "@/lib/hypixel/player-data";
 import { computeGameBreakdown, sortGameBreakdown } from "@/lib/logic/breakdown";
@@ -33,29 +33,32 @@ async function PlayerBreakdownContent({
 	params: Promise<{ username: string }>;
 }) {
 	const { username } = await params;
-	const decoded = decodeURIComponent(username);
 
-	let data;
+	let result;
 	try {
-		data = await getPlayerPageData(decoded);
+		const decoded = decodeURIComponent(username);
+		const data = await getPlayerPageData(decoded);
+		const rows = sortGameBreakdown(
+			computeGameBreakdown(data.views),
+			"obtained",
+		);
+		const summary = summarizeAchievementViews(data.views);
+		result = { decoded, player: data.player, rows, summary };
 	} catch (err) {
 		return (
-			<BlockPanel className="text-center py-12 text-mc-red">
-				{formatError(err)}
-			</BlockPanel>
+			<ErrorPanel
+				title="Couldn't load breakdown"
+				message={formatError(err)}
+			/>
 		);
 	}
 
-	const rows = sortGameBreakdown(
-		computeGameBreakdown(data.views),
-		"obtained",
-	);
-	const summary = summarizeAchievementViews(data.views);
+	const { decoded, player, rows, summary } = result;
 
 	return (
 		<div className="space-y-4">
 			<PlayerHeader
-				player={data.player}
+				player={player}
 				query={decoded}
 				summary={summary}
 			/>

@@ -1,6 +1,5 @@
 import "server-only";
 
-import { cacheLife, cacheTag } from "next/cache";
 import type { CompareApiResponse } from "@/lib/api/types";
 import {
 	correlateAchievements,
@@ -22,9 +21,6 @@ export async function getComparePageData(
 	p2: string,
 	metric: CompareMetric = "obtained",
 ): Promise<CompareApiResponse> {
-	"use cache: remote";
-	cacheLife("hypixelPlayer");
-
 	const p1Query = validatePlayerQuery(p1);
 	const p2Query = validatePlayerQuery(p2);
 
@@ -37,8 +33,6 @@ export async function getComparePageData(
 		fetchPlayer(p1Query),
 		fetchPlayer(p2Query),
 	]);
-
-	cacheTag(`player:${player1.uuid}`, `player:${player2.uuid}`);
 
 	const p1Views = correlateAchievements(
 		catalog.achievements,

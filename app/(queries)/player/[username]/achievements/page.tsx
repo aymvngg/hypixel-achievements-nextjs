@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { PlayerAchievementsExplorer } from "@/components/achievements/PlayerAchievementsExplorer";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
-import { BlockPanel } from "@/components/ui/BlockPanel";
+import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
 import { getPlayerPageData } from "@/lib/hypixel/player-data";
 import { summarizeAchievementViews } from "@/lib/logic/achievement-stats";
@@ -36,21 +36,26 @@ async function PlayerAchievementsContent({
 	searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
 	const { username } = await params;
-	const decoded = decodeURIComponent(username);
-	const filterParams = parseAchievementSearchParams(await searchParams);
+	const sp = await searchParams;
 
-	let data;
+	let result;
 	try {
-		data = await getPlayerPageData(decoded);
+		const decoded = decodeURIComponent(username);
+		const filterParams = parseAchievementSearchParams(sp);
+		const data = await getPlayerPageData(decoded);
+		const summary = summarizeAchievementViews(data.views);
+		const compactViews = toCompactViews(data.views);
+		result = { decoded, filterParams, data, summary, compactViews };
 	} catch (err) {
 		return (
-			<BlockPanel className="text-center py-12 text-mc-red">
-				{formatError(err)}
-			</BlockPanel>
+			<ErrorPanel
+				title="Couldn't load achievements"
+				message={formatError(err)}
+			/>
 		);
 	}
 
-	const summary = summarizeAchievementViews(data.views);
+	const { decoded, filterParams, data, summary, compactViews } = result;
 
 	return (
 		<div className="space-y-4">
@@ -63,7 +68,7 @@ async function PlayerAchievementsContent({
 			<PlayerAchievementsExplorer
 				key={decoded}
 				initialParams={filterParams}
-				compactViews={toCompactViews(data.views)}
+				compactViews={compactViews}
 				games={data.games}
 			/>
 		</div>

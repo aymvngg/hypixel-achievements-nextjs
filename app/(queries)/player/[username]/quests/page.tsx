@@ -4,7 +4,7 @@ import { PlayerQuestExplorer } from "@/components/quests/PlayerQuestExplorer";
 import { QuestSummaryStrip } from "@/components/quests/QuestSummaryStrip";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
-import { BlockPanel } from "@/components/ui/BlockPanel";
+import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
 import { getPlayerPageData } from "@/lib/hypixel/player-data";
 import { getPlayerQuestPageData } from "@/lib/hypixel/quest-data";
@@ -38,26 +38,30 @@ async function PlayerQuestsContent({
 	searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
 	const { username } = await params;
-	const decoded = decodeURIComponent(username);
-	const filterParams = parseQuestSearchParams(await searchParams);
+	const sp = await searchParams;
 
-	let achData;
-	let questData;
+	let result;
 	try {
-		[achData, questData] = await Promise.all([
+		const decoded = decodeURIComponent(username);
+		const filterParams = parseQuestSearchParams(sp);
+		const [achData, questData] = await Promise.all([
 			getPlayerPageData(decoded),
 			getPlayerQuestPageData(decoded),
 		]);
+		const achSummary = summarizeAchievementViews(achData.views);
+		const questSummary = summarizeQuestViews(questData.views);
+		result = { decoded, filterParams, questData, achSummary, questSummary };
 	} catch (err) {
 		return (
-			<BlockPanel className="text-center py-12 text-mc-red">
-				{formatError(err)}
-			</BlockPanel>
+			<ErrorPanel
+				title="Couldn't load quests"
+				message={formatError(err)}
+			/>
 		);
 	}
 
-	const achSummary = summarizeAchievementViews(achData.views);
-	const questSummary = summarizeQuestViews(questData.views);
+	const { decoded, filterParams, questData, achSummary, questSummary } =
+		result;
 
 	return (
 		<div className="space-y-4">

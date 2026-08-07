@@ -1,3 +1,7 @@
+export type CacheResult<T> =
+	| { ok: true; data: T }
+	| { ok: false; error: string };
+
 export interface AchievementView {
 	game: string;
 	codeName: string;

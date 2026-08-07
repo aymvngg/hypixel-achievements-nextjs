@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { CompareForm } from "@/components/compare/CompareForm";
 import { CompareGameCards } from "@/components/compare/CompareGameCards";
 import { CompareSummary } from "@/components/compare/CompareSummary";
-import { BlockPanel } from "@/components/ui/BlockPanel";
+import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
 import { getComparePageData } from "@/lib/hypixel/compare-data";
 import { shortName } from "@/lib/util/display";
@@ -14,9 +14,10 @@ async function CompareResults({ p1, p2 }: { p1: string; p2: string }) {
 		data = await getComparePageData(p1, p2, "obtained");
 	} catch (err) {
 		return (
-			<BlockPanel className="text-center py-8 text-mc-red">
-				{formatError(err)}
-			</BlockPanel>
+			<ErrorPanel
+				title="Couldn't compare players"
+				message={formatError(err)}
+			/>
 		);
 	}
 
@@ -59,9 +60,11 @@ async function ComparePageContent({
 			<CompareForm p1={p1} p2={p2} />
 
 			{samePlayer && (
-				<BlockPanel className="text-mc-red text-center">
-					Players must be different.
-				</BlockPanel>
+				<ErrorPanel
+					title="Players must be different"
+					showHome={false}
+					message="Choose two different players to compare."
+				/>
 			)}
 
 			{p1 && p2 && !samePlayer && (

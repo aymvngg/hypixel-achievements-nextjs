@@ -12,11 +12,13 @@ import { isUuid, normalizeUuid } from "@/lib/util/validate";
 import { withRetry } from "@/lib/hypixel/retry";
 import type {
 	AchievementView,
+	CacheResult,
 	PlayerData,
 	PlayerQuestData,
 } from "@/lib/hypixel/types";
 import { toPublicPlayerData } from "@/lib/hypixel/types";
 import { sumObtainedPoints } from "@/lib/hypixel/types";
+import { formatError } from "@/lib/util/errors";
 
 export type { AchievementView, PlayerData };
 export { toPublicPlayerData };
@@ -95,18 +97,26 @@ function parsePlayerData(rawRes: RawPlayerResponse): PlayerData {
 	};
 }
 
-async function loadQuests(): Promise<RawQuestsResponse> {
+async function loadQuests(): Promise<CacheResult<RawQuestsResponse>> {
 	"use cache: remote";
 	cacheLife("hypixelAchievements");
 
-	const client = getHypixelClient();
-	const res = (await withRetry(() =>
-		client.getQuests({ raw: true }),
-	)) as unknown as RawQuestsResponse & { success?: boolean };
+	try {
+		const client = getHypixelClient();
+		const res = (await withRetry(() =>
+			client.getQuests({ raw: true }),
+		)) as unknown as RawQuestsResponse & { success?: boolean };
 
-	return toCacheable({
-		quests: res.quests ?? {},
-	});
+		return {
+			ok: true,
+			data: toCacheable({
+				quests: res.quests ?? {},
+			}),
+		};
+	} catch (err) {
+		cacheLife("hypixelError");
+		return { ok: false, error: formatError(err) };
+	}
 }
 
 export interface AchievementCatalog {
@@ -114,73 +124,108 @@ export interface AchievementCatalog {
 	legacyKeys: ReadonlySet<string>;
 }
 
-async function loadAchievements(): Promise<AchievementCatalog> {
+async function loadAchievements(): Promise<CacheResult<AchievementCatalog>> {
 	"use cache: remote";
 	cacheLife("hypixelAchievements");
 
-	const client = getHypixelClient();
-	const rawRes = (await withRetry(() =>
-		client.getAchievements({ raw: true }),
-	)) as unknown as RawAchievementsResponse;
-	const achievements = await withRetry(() => client.getAchievements());
-	const legacyKeys = collectLegacyAchievementKeys(rawRes);
+	try {
+		const client = getHypixelClient();
+		const rawRes = (await withRetry(() =>
+			client.getAchievements({ raw: true }),
+		)) as unknown as RawAchievementsResponse;
+		const achievements = await withRetry(() => client.getAchievements());
+		const legacyKeys = collectLegacyAchievementKeys(rawRes);
 
-	return toCacheable({ achievements, legacyKeys });
+		return { ok: true, data: toCacheable({ achievements, legacyKeys }) };
+	} catch (err) {
+		cacheLife("hypixelError");
+		return { ok: false, error: formatError(err) };
+	}
 }
 
-async function loadMojangUuid(ign: string): Promise<string | null> {
+async function loadMojangUuid(
+	ign: string,
+): Promise<CacheResult<string | null>> {
 	"use cache: remote";
 	cacheLife("hypixelUuid");
 
-	const normalized = ign.toLowerCase();
-	const res = await withRetry(() =>
-		fetch(`${MOJANG_API}/${encodeURIComponent(normalized)}`),
-	);
-	if (!res.ok) return null;
+	try {
+		const normalized = ign.toLowerCase();
+		const res = await withRetry(() =>
+			fetch(`${MOJANG_API}/${encodeURIComponent(normalized)}`),
+		);
+		if (!res.ok) return { ok: true, data: null };
 
-	const data = (await res.json()) as { id?: string };
-	if (!data.id) return null;
+		const data = (await res.json()) as { id?: string };
+		if (!data.id) return { ok: true, data: null };
 
-	return normalizeUuid(data.id);
+		return { ok: true, data: normalizeUuid(data.id) };
+	} catch (err) {
+		cacheLife("hypixelError");
+		return { ok: false, error: formatError(err) };
+	}
 }
 
-async function loadPlayerByUuid(uuid: string): Promise<PlayerData> {
+async function loadPlayerByUuid(
+	uuid: string,
+): Promise<CacheResult<PlayerData>> {
 	"use cache: remote";
 	cacheLife("hypixelPlayer");
 
-	const normalizedUuid = normalizeUuid(uuid);
-	const client = getHypixelClient();
-	const rawRes = (await withRetry(() =>
-		client.getPlayer(normalizedUuid, {
-			guild: false,
-			recentGames: false,
-			raw: true,
-		}),
-	)) as RawPlayerResponse;
+	try {
+		const normalizedUuid = normalizeUuid(uuid);
+		const client = getHypixelClient();
+		const rawRes = (await withRetry(() =>
+			client.getPlayer(normalizedUuid, {
+				guild: false,
+				recentGames: false,
+				raw: true,
+			}),
+		)) as RawPlayerResponse;
 
-	return parsePlayerData(rawRes);
+		return { ok: true, data: parsePlayerData(rawRes) };
+	} catch (err) {
+		cacheLife("hypixelError");
+		return { ok: false, error: formatError(err) };
+	}
 }
 
 export async function fetchAchievements(): Promise<AchievementCatalog> {
-	return dedupe("achievements", loadAchievements);
+	return dedupe("achievements", async () => {
+		const result = await loadAchievements();
+		if (!result.ok) throw new Error(result.error);
+		return result.data;
+	});
 }
 
 export async function fetchQuests(): Promise<RawQuestsResponse> {
-	return dedupe("quests", loadQuests);
+	return dedupe("quests", async () => {
+		const result = await loadQuests();
+		if (!result.ok) throw new Error(result.error);
+		return result.data;
+	});
 }
 
 export async function fetchPlayer(query: string): Promise<PlayerData> {
 	const key = `player:${query.trim().toLowerCase()}`;
 	return dedupe(key, async () => {
 		const normalizedQuery = query.trim();
-		const uuid = isUuid(normalizedQuery)
-			? normalizeUuid(normalizedQuery)
-			: await loadMojangUuid(normalizedQuery);
-
-		if (!uuid) {
-			throw new Error(`No UUID found for player "${normalizedQuery}"`);
+		let uuid: string;
+		if (isUuid(normalizedQuery)) {
+			uuid = normalizeUuid(normalizedQuery);
+		} else {
+			const mojangResult = await loadMojangUuid(normalizedQuery);
+			if (!mojangResult.ok) throw new Error(mojangResult.error);
+			if (!mojangResult.data) {
+				throw new Error(
+					`No UUID found for player "${normalizedQuery}"`,
+				);
+			}
+			uuid = mojangResult.data;
 		}
 
-		return loadPlayerByUuid(uuid);
+		const playerResult = await loadPlayerByUuid(uuid);
+		if (!playerResult.ok) throw new Error(playerResult.error);
+		return playerResult.data;
 	});
 }
