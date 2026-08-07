@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { CLIENT_IP_HEADER } from "@/lib/ratelimit/ip";
+import { rateLimitPage } from "@/lib/ratelimit/rate-limit-page";
 
 // ---------------------------------------------------------------------------
 // Rate limiting in Proxy.
@@ -156,18 +157,13 @@ export function proxy(request: NextRequest) {
 	if (playerKey !== null && ip) {
 		const retryAfterSec = enforceRateLimit(ip, playerKey);
 		if (retryAfterSec !== null) {
-			return NextResponse.json(
-				{
-					error: "Too Many Requests",
-					message:
-						"You're making too many requests. Please slow down and try again.",
-					retryAfterSec,
+			return new NextResponse(rateLimitPage(retryAfterSec), {
+				status: 429,
+				headers: {
+					"content-type": "text/html; charset=utf-8",
+					"retry-after": String(retryAfterSec),
 				},
-				{
-					status: 429,
-					headers: { "retry-after": String(retryAfterSec) },
-				},
-			);
+			});
 		}
 	}
 

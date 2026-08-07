@@ -155,13 +155,6 @@ function parseArgs(argv) {
 	return opts;
 }
 
-function label(row) {
-	if (row.error) return `ERROR ${row.error}`;
-	if (row.limited) return `RATE LIMITED`;
-	if (row.pageError) return `page error`;
-	return "ok";
-}
-
 async function runPool(jobs, opts) {
 	const rows = new Array(jobs.length);
 	let next = 0;
