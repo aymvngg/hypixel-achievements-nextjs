@@ -28,7 +28,7 @@ function GameNavItem({
 			type="button"
 			onClick={onSelect}
 			aria-current={active ? "page" : undefined}
-			className={`block w-full text-left rounded-sm border-2 transition-colors duration-150 ${
+			className={`block w-full text-left rounded-sm border-2 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-panel ${
 				active
 					? "bg-mc-grass/20 border-mc-grass"
 					: "border-transparent hover:bg-mc-stone-dark hover:border-mc-border/50"
@@ -97,7 +97,7 @@ export function QuestGameSidebar({
 				type="button"
 				onClick={() => setMobileOpen((v) => !v)}
 				aria-expanded={mobileOpen}
-				className="lg:hidden flex items-center justify-between gap-2 w-full px-2 py-1.5 mb-1 rounded-sm border-2 border-mc-border bg-mc-stone text-white"
+				className="lg:hidden flex items-center justify-between gap-2 w-full px-2 py-1.5 mb-1 rounded-sm border-2 border-mc-border bg-mc-stone text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-panel"
 			>
 				<span className={`${PF} text-xs uppercase tracking-wide truncate`}>
 					{activeLabel}

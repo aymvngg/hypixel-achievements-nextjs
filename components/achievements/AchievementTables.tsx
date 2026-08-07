@@ -8,6 +8,7 @@ import type { AchievementSearchParams } from "@/lib/search-params";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
 import type { SortField } from "@/lib/util/validate";
 import { CollapsibleSection } from "@/components/achievements/CollapsibleSection";
+import { PixelIcon } from "@/components/ui/PixelIcon";
 
 const NF = new Intl.NumberFormat("en-US");
 const VIRTUALIZE_THRESHOLD = 40;
@@ -124,6 +125,12 @@ function AchievementRow({
 			</td>
 			<td className="align-middle p-2 border-b border-black/35 w-[28%]">
 				<span className="font-[family-name:var(--font-pixel)] text-xs text-white leading-tight block">
+					{view.completed && (
+						<PixelIcon
+							name="check"
+							className="inline-block h-3 w-3 text-mc-grass mr-1.5 align-[-0.15em]"
+						/>
+					)}
 					{view.name}
 				</span>
 			</td>
@@ -444,7 +451,10 @@ function AchievementTable({
 		>
 			{views.length === 0 ? (
 				<div className="text-center py-12 px-4">
-					<p className="text-2xl mb-2">📭</p>
+					<PixelIcon
+						name="mailbox"
+						className="h-8 w-8 mx-auto mb-2 text-mc-stone-light"
+					/>
 					<p className="text-mc-stone-light text-sm font-[family-name:var(--font-pixel)]">
 						{emptyMessage}
 					</p>

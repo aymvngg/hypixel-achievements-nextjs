@@ -2,6 +2,7 @@ import type { QuestResetType, QuestStatus, QuestView } from "@/lib/hypixel/types
 import { formatQuestReward } from "@/lib/util/quest-rewards";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
 import { PixelImg } from "@/components/ui/PixelImg";
+import { PixelIcon } from "@/components/ui/PixelIcon";
 
 const PF = "font-[family-name:var(--font-pixel)]";
 
@@ -124,9 +125,7 @@ function ObjectiveList({
 							aria-hidden
 						>
 							{obj.completed && (
-								<span className={`${PF} text-[0.45rem] leading-none`}>
-									✓
-								</span>
+								<PixelIcon name="check" className="h-2.5 w-2.5" />
 							)}
 						</span>
 						<div className="flex-1 min-w-0 space-y-1">
@@ -168,7 +167,7 @@ function RewardFooter({ rewards }: { rewards: QuestView["rewards"] }) {
 	return (
 		<footer className="mt-3 pt-2.5 border-t-2 border-dashed border-mc-border/50">
 			<p
-				className={`${PF} text-[0.5rem] uppercase tracking-[0.12em] text-mc-stone-light mb-1.5`}
+				className={`${PF} text-[0.6rem] uppercase tracking-[0.12em] text-mc-stone-light mb-1.5`}
 			>
 				Rewards
 			</p>
@@ -240,14 +239,14 @@ export function QuestCard({
 						<div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
 							{!hideType && (
 								<span
-									className={`${PF} text-[0.55rem] uppercase tracking-wide ${type.text}`}
+									className={`${PF} text-[0.6rem] uppercase tracking-wide ${type.text}`}
 								>
 									{type.label}
 								</span>
 							)}
 							{showGame && (
 								<span
-									className={`${PF} text-[0.55rem] uppercase text-mc-stone-light`}
+									className={`${PF} text-[0.6rem] uppercase text-mc-stone-light`}
 								>
 									{formatGameLabel(quest.game)}
 								</span>
@@ -258,7 +257,7 @@ export function QuestCard({
 									aria-hidden
 								/>
 								<span
-									className={`${PF} text-[0.55rem] uppercase ${status.text}`}
+									className={`${PF} text-[0.6rem] uppercase ${status.text}`}
 								>
 									{status.label}
 								</span>
@@ -284,7 +283,7 @@ export function QuestCard({
 									{progressPct}%
 								</span>
 								<span
-									className={`${PF} text-[0.55rem] text-mc-stone-light`}
+									className={`${PF} text-[0.6rem] text-mc-stone-light`}
 								>
 									{totals.progress}/{totals.target}
 								</span>

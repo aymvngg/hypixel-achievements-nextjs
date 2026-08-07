@@ -37,11 +37,11 @@ function TypeCard({
 				</span>
 			</span>
 			{summary.active > 0 && (
-				<span className={`text-[0.55rem] ${PF} text-mc-sky`}>
+				<span className={`text-[0.6rem] ${PF} text-mc-sky`}>
 					{summary.active} active
 				</span>
 			)}
-			<span className={`text-[0.55rem] ${PF} text-mc-stone-light`}>
+			<span className={`text-[0.6rem] ${PF} text-mc-stone-light`}>
 				Resets in {formatResetIn(resetMs)}
 			</span>
 		</div>
@@ -88,7 +88,7 @@ export function QuestSummaryStrip({ summary }: { summary: QuestSummary }) {
 					<span className={`${PF} text-lg text-mc-grass font-bold`}>
 						{pct}%
 					</span>
-					<span className={`text-[0.55rem] ${PF} text-mc-stone-light`}>
+					<span className={`text-[0.6rem] ${PF} text-mc-stone-light`}>
 						{summary.completed} / {summary.total} quests
 					</span>
 				</div>

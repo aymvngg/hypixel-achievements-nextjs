@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PixelIcon } from "@/components/ui/PixelIcon";
 
 export function PlayerNav({
 	username,
@@ -20,39 +21,42 @@ export function PlayerNav({
 				aria-current={
 					activeSection === "achievements" ? "page" : undefined
 				}
-				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
+				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-stone-dark ${
 					activeSection === "achievements"
 						? "bg-mc-grass text-white"
 						: "text-mc-stone-light hover:text-foreground"
 				}`}
 			>
-				🏆 Achievements
+				<PixelIcon name="trophy" className="h-3 w-3" />
+				Achievements
 			</Link>
 			<Link
 				href={`${base}/breakdown`}
 				aria-current={
 					activeSection === "breakdown" ? "page" : undefined
 				}
-				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
+				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-stone-dark ${
 					activeSection === "breakdown"
 						? "bg-mc-grass text-white"
 						: "text-mc-stone-light hover:text-foreground"
 				}`}
 			>
-				📊 Breakdown
+				<PixelIcon name="chart" className="h-3 w-3" />
+				Breakdown
 			</Link>
 			<Link
 				href={`${base}/quests`}
 				aria-current={
 					activeSection === "quests" ? "page" : undefined
 				}
-				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors ${
+				className={`px-3 py-1.5 text-xs font-[family-name:var(--font-pixel)] uppercase rounded-sm transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-stone-dark ${
 					activeSection === "quests"
 						? "bg-mc-grass text-white"
 						: "text-mc-stone-light hover:text-foreground"
 				}`}
 			>
-				📜 Quests
+				<PixelIcon name="scroll" className="h-3 w-3" />
+				Quests
 			</Link>
 		</nav>
 	);

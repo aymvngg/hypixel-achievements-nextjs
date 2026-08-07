@@ -63,7 +63,7 @@ export function CollapsibleSection({
 				onClick={toggleCollapsed}
 				aria-expanded={!collapsed}
 				aria-controls={tableId}
-				className="flex items-center justify-between gap-3 px-0.5 w-full text-left"
+				className="flex items-center justify-between gap-3 px-0.5 w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 			>
 				<div className="flex items-center gap-2">
 					<span

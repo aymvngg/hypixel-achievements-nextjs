@@ -48,13 +48,13 @@ export function SiteHeader() {
 					<nav className="flex flex-wrap items-center gap-2 text-xs font-display uppercase tracking-wider">
 						<Link
 							href="/"
-							className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors"
+							className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-stone-dark"
 						>
 							Home
 						</Link>
 					<Link
 						href="/compare"
-						className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors"
+						className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mc-sky/60 focus-visible:ring-offset-2 focus-visible:ring-offset-mc-stone-dark"
 					>
 						Compare
 					</Link>
