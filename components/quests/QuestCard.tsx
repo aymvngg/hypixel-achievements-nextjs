@@ -1,4 +1,8 @@
-import type { QuestResetType, QuestStatus, QuestView } from "@/lib/hypixel/types";
+import type {
+	QuestResetType,
+	QuestStatus,
+	QuestView,
+} from "@/lib/hypixel/types";
 import { formatQuestReward } from "@/lib/util/quest-rewards";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
 import { PixelImg } from "@/components/ui/PixelImg";
@@ -75,14 +79,13 @@ function ProgressBar({
 	active: boolean;
 	className?: string;
 }) {
-	const fill =
-		completed
-			? "bg-mc-grass"
-			: active
+	const fill = completed
+		? "bg-mc-grass"
+		: active
+			? "bg-mc-sky"
+			: pct > 0
 				? "bg-mc-sky"
-				: pct > 0
-					? "bg-mc-sky"
-					: "bg-mc-stone";
+				: "bg-mc-stone";
 
 	return (
 		<div className={`${BAR_TRACK} ${className}`}>
@@ -125,7 +128,10 @@ function ObjectiveList({
 							aria-hidden
 						>
 							{obj.completed && (
-								<PixelIcon name="check" className="h-2.5 w-2.5" />
+								<PixelIcon
+									name="check"
+									className="h-2.5 w-2.5"
+								/>
 							)}
 						</span>
 						<div className="flex-1 min-w-0 space-y-1">
@@ -224,19 +230,15 @@ export function QuestCard({
 
 			<div className="flex-1 min-w-0 p-3 sm:p-3.5">
 				<header className="flex gap-2.5 sm:gap-3">
-					{showGame && gameIcon && (
-						<div
-							className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_3px_rgba(0,0,0,0.4)]"
-						>
-							<PixelImg
-								src={gameIcon}
-								alt=""
-								width={32}
-								height={32}
-								className="shrink-0"
-							/>
-						</div>
-					)}
+					<div className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_3px_rgba(0,0,0,0.4)]">
+						<PixelImg
+							src={gameIcon!}
+							alt=""
+							width={32}
+							height={32}
+							className="shrink-0"
+						/>
+					</div>
 
 					<div className="flex-1 min-w-0">
 						<div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
@@ -247,14 +249,12 @@ export function QuestCard({
 									{type.label}
 								</span>
 							)}
-							{showGame && (
-								<span
-									className={`inline-flex items-center gap-1.5 ${PF} text-[0.65rem] uppercase tracking-wide px-2 py-0.5 rounded-sm border-2 border-mc-border bg-mc-stone-dark text-foreground shadow-[inset_1px_1px_0_rgba(255,255,255,0.06)]`}
-								>
-									{formatGameLabel(quest.game)}
-								</span>
-							)}
-							{showGame && count !== undefined && (
+							<span
+								className={`inline-flex items-center gap-1.5 ${PF} text-[0.65rem] uppercase tracking-wide px-2 py-0.5 rounded-sm border-2 border-mc-border bg-mc-stone-dark text-foreground shadow-[inset_1px_1px_0_rgba(255,255,255,0.06)]`}
+							>
+								{formatGameLabel(quest.game)}
+							</span>
+							{count !== undefined && (
 								<span
 									className={`inline-flex items-center gap-1 ${PF} text-[0.6rem] tabular-nums text-mc-sky`}
 								>
