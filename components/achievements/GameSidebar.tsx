@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { BlockPanel } from "@/components/ui/BlockPanel";
 import { PixelImg } from "@/components/ui/PixelImg";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
@@ -87,16 +88,39 @@ export function GameSidebar({
 		formatGameLabel(a).localeCompare(formatGameLabel(b)),
 	);
 	const activeGame = params.game;
+	const activeLabel = activeGame ? formatGameLabel(activeGame) : "All games";
+	const [mobileOpen, setMobileOpen] = useState(false);
 
 	return (
 		<BlockPanel className="p-2 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto">
-			<nav className="flex flex-col gap-0.5">
+			<button
+				type="button"
+				onClick={() => setMobileOpen((v) => !v)}
+				aria-expanded={mobileOpen}
+				className="lg:hidden flex items-center justify-between gap-2 w-full px-2 py-1.5 mb-1 rounded-sm border-2 border-mc-border bg-mc-stone text-white"
+			>
+				<span className={`${PF} text-xs uppercase tracking-wide truncate`}>
+					{activeLabel}
+				</span>
+				<span
+					className={`${PF} text-[0.65rem] text-mc-stone-light transition-transform ${mobileOpen ? "rotate-90" : ""}`}
+					aria-hidden
+				>
+					▶
+				</span>
+			</button>
+			<nav
+				className={`flex-col gap-0.5 ${mobileOpen ? "flex" : "hidden"} lg:flex`}
+			>
 				<GameNavItem
 					active={!activeGame}
 					label="All games"
 					stat={totalStat}
 					icon="/icons/general.png"
-					onSelect={() => onGameSelect(undefined)}
+					onSelect={() => {
+						onGameSelect(undefined);
+						setMobileOpen(false);
+					}}
 				/>
 				{sortedGames.map((game) => (
 					<GameNavItem
@@ -112,7 +136,10 @@ export function GameSidebar({
 							}
 						}
 						icon={gameIconUrl(game)}
-						onSelect={() => onGameSelect(game)}
+						onSelect={() => {
+							onGameSelect(game);
+							setMobileOpen(false);
+						}}
 					/>
 				))}
 			</nav>

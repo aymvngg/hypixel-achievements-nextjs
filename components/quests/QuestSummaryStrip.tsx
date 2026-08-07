@@ -20,7 +20,7 @@ function TypeCard({
 }) {
 	return (
 		<div
-			className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)] min-w-[7rem]"
+			className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)] min-w-[7rem] flex-1"
 		>
 			<span
 				className={`text-[0.6rem] ${PF} uppercase tracking-wider ${accent}`}
@@ -58,7 +58,7 @@ export function QuestSummaryStrip({ summary }: { summary: QuestSummary }) {
 
 	return (
 		<BlockPanel variant="elevated" className="space-y-3">
-			<div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+			<div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3 sm:justify-start">
 				<TypeCard
 					label="Daily"
 					summary={summary.byType.DAILY}
@@ -78,7 +78,7 @@ export function QuestSummaryStrip({ summary }: { summary: QuestSummary }) {
 					accent="text-mc-purple"
 				/>
 				<div
-					className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)]"
+					className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)] flex-1"
 				>
 					<span
 						className={`text-[0.6rem] ${PF} uppercase text-mc-stone-light tracking-wider`}

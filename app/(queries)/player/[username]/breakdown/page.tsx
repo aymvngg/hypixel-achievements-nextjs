@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { BreakdownTable } from "@/components/breakdown/BreakdownTable";
+import { AchievementSummaryStrip } from "@/components/achievements/AchievementSummaryStrip";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
@@ -60,9 +61,9 @@ async function PlayerBreakdownContent({
 			<PlayerHeader
 				player={player}
 				query={decoded}
-				summary={summary}
 			/>
 			<PlayerNav username={decoded} activeSection="breakdown" />
+			<AchievementSummaryStrip summary={summary} />
 
 			<div className="flex items-center gap-2 px-0.5">
 				<span className="w-1.5 h-5 bg-mc-gold" aria-hidden />

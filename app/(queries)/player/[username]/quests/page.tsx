@@ -6,9 +6,7 @@ import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { Loading } from "@/components/ui/Loading";
-import { getPlayerPageData } from "@/lib/hypixel/player-data";
 import { getPlayerQuestPageData } from "@/lib/hypixel/quest-data";
-import { summarizeAchievementViews } from "@/lib/logic/achievement-stats";
 import { summarizeQuestViews } from "@/lib/logic/quest-stats";
 import { getDisplayName } from "@/lib/util/display";
 import { formatError } from "@/lib/util/errors";
@@ -44,13 +42,9 @@ async function PlayerQuestsContent({
 	try {
 		const decoded = decodeURIComponent(username);
 		const filterParams = parseQuestSearchParams(sp);
-		const [achData, questData] = await Promise.all([
-			getPlayerPageData(decoded),
-			getPlayerQuestPageData(decoded),
-		]);
-		const achSummary = summarizeAchievementViews(achData.views);
+		const questData = await getPlayerQuestPageData(decoded);
 		const questSummary = summarizeQuestViews(questData.views);
-		result = { decoded, filterParams, questData, achSummary, questSummary };
+		result = { decoded, filterParams, questData, questSummary };
 	} catch (err) {
 		return (
 			<ErrorPanel
@@ -60,7 +54,7 @@ async function PlayerQuestsContent({
 		);
 	}
 
-	const { decoded, filterParams, questData, achSummary, questSummary } =
+	const { decoded, filterParams, questData, questSummary } =
 		result;
 
 	return (
@@ -68,7 +62,6 @@ async function PlayerQuestsContent({
 			<PlayerHeader
 				player={questData.player}
 				query={decoded}
-				summary={achSummary}
 			/>
 			<PlayerNav username={decoded} activeSection="quests" />
 			<QuestSummaryStrip summary={questSummary} />

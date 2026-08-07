@@ -43,11 +43,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" className={`${inter.variable} ${minecraft.variable}`}>
-			<body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased">
+			<body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased overflow-x-hidden">
 				<Suspense
 					fallback={
 						<header className="w-full border-b-[3px] border-mc-border bg-mc-stone-dark shadow-[0_4px_0_rgba(0,0,0,0.28)]">
-							<div className="w-full max-w-6xl mx-auto px-4 py-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+							<div className="w-full max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
 								<div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
 									<Link
 										href="/"
@@ -56,7 +56,7 @@ export default function RootLayout({
 										<span className="font-display text-lg sm:text-xl text-mc-gold tracking-[0.08em] uppercase">
 											Hypixel Achievements
 										</span>
-										<span className="text-xs sm:text-sm text-mc-stone-light">
+										<span className="hidden sm:block text-xs lg:text-sm text-mc-stone-light">
 											Browse, compare, and break down
 											player achievements.
 										</span>

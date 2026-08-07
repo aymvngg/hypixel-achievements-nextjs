@@ -34,7 +34,7 @@ function PlayerSide({
 				: "border-mc-border";
 	return (
 		<div
-			className={`flex items-center gap-2 min-w-0 ${right ? "flex-row-reverse" : ""}`}
+			className={`flex items-center gap-2 min-w-0 ${right ? "sm:flex-row-reverse" : ""}`}
 		>
 			<PixelImg
 				src={playerHeadUrl(player.uuid, 40)}
@@ -43,7 +43,7 @@ function PlayerSide({
 				height={40}
 				className={`border-2 ${headBorder} rounded-sm shrink-0`}
 			/>
-			<div className={`min-w-0 ${right ? "text-right" : ""} flex-1`}>
+			<div className={`min-w-0 ${right ? "sm:text-right" : ""} flex-1`}>
 				<p
 					className={`${PF} text-xs uppercase tracking-wider truncate ${win ? "text-mc-grass" : "text-mc-stone-light"}`}
 				>
@@ -56,7 +56,7 @@ function PlayerSide({
 				</p>
 				<div className="flex items-center gap-1.5 mt-0.5">
 					<div
-						className={`flex-1 h-1.5 bg-black/40 border border-mc-border/60 overflow-hidden ${right ? "flex-row-reverse flex" : ""}`}
+						className={`flex-1 h-1.5 bg-black/40 border border-mc-border/60 overflow-hidden ${right ? "sm:flex-row-reverse sm:flex" : ""}`}
 					>
 						<div
 							className="h-full bg-mc-grass"
@@ -102,41 +102,41 @@ export function CompareGameCards({
 				const p2Status = cmp < 0 ? "win" : cmp > 0 ? "loss" : "tie";
 				return (
 					<div key={row.game} className={`${PANEL} p-3`}>
-						<div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-							<PlayerSide
-								player={p1}
-								name={p1Short}
-								obtained={row.p1Obtained}
-								total={row.p1Total}
-								status={p1Status}
-								align="left"
-							/>
-							<div className="flex flex-col items-center gap-1 px-2 border-x-2 border-mc-border/50">
-								{icon && (
-									<PixelImg
-										src={icon}
-										alt=""
-										width={28}
-										height={28}
-										className="shrink-0"
-									/>
-								)}
-								<span
-									className={`${PF} text-[0.65rem] text-mc-stone-light uppercase tracking-[0.03em] text-center leading-tight`}
-								>
-									{formatGameLabel(row.game)}
-								</span>
-							</div>
-							<PlayerSide
-								player={p2}
-								name={p2Short}
-								obtained={row.p2Obtained}
-								total={row.p2Total}
-								status={p2Status}
-								align="right"
-							/>
+					<div className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-2">
+						<PlayerSide
+							player={p1}
+							name={p1Short}
+							obtained={row.p1Obtained}
+							total={row.p1Total}
+							status={p1Status}
+							align="left"
+						/>
+						<div className="flex flex-col items-center gap-1 px-2 border-b-2 sm:border-x-2 sm:border-b-0 border-mc-border/50 py-1 sm:py-0">
+							{icon && (
+								<PixelImg
+									src={icon}
+									alt=""
+									width={28}
+									height={28}
+									className="shrink-0"
+								/>
+							)}
+							<span
+								className={`${PF} text-[0.65rem] text-mc-stone-light uppercase tracking-[0.03em] text-center leading-tight`}
+							>
+								{formatGameLabel(row.game)}
+							</span>
 						</div>
+						<PlayerSide
+							player={p2}
+							name={p2Short}
+							obtained={row.p2Obtained}
+							total={row.p2Total}
+							status={p2Status}
+							align="right"
+						/>
 					</div>
+				</div>
 				);
 			})}
 		</div>

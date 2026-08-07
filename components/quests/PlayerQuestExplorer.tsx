@@ -60,7 +60,7 @@ export function PlayerQuestExplorer({
 
 	return (
 		<div className="flex flex-col lg:flex-row gap-4 items-start">
-			<aside className="w-full lg:w-56 shrink-0 order-2 lg:order-1 lg:sticky lg:top-6 lg:self-start">
+			<aside className="w-full lg:w-56 shrink-0 lg:sticky lg:top-6 lg:self-start">
 				<QuestGameSidebar
 					games={games}
 					params={params}
@@ -69,7 +69,7 @@ export function PlayerQuestExplorer({
 					onGameSelect={(game) => updateParams({ game })}
 				/>
 			</aside>
-			<div className="flex-1 min-w-0 space-y-4 order-1 lg:order-2">
+			<div className="flex-1 min-w-0 space-y-4">
 				<div className="sticky top-0 z-20 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-mc-border/40 space-y-2 lg:static lg:mx-0 lg:px-0 lg:py-0 lg:bg-transparent lg:backdrop-blur-none lg:border-b-0">
 					<QuestFilters
 						params={params}

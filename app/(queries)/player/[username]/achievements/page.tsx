@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PlayerAchievementsExplorer } from "@/components/achievements/PlayerAchievementsExplorer";
+import { AchievementSummaryStrip } from "@/components/achievements/AchievementSummaryStrip";
 import { PlayerHeader } from "@/components/player/PlayerHeader";
 import { PlayerNav } from "@/components/layout/PlayerNav";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
@@ -62,9 +63,9 @@ async function PlayerAchievementsContent({
 			<PlayerHeader
 				player={data.player}
 				query={decoded}
-				summary={summary}
 			/>
 			<PlayerNav username={decoded} activeSection="achievements" />
+			<AchievementSummaryStrip summary={summary} />
 			<PlayerAchievementsExplorer
 				key={decoded}
 				initialParams={filterParams}

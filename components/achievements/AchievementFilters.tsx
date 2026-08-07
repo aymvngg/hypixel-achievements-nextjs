@@ -30,11 +30,16 @@ export function AchievementFilters({
 	const syncedSearch = params.search ?? "";
 	const [searchInput, setSearchInput] = useState(syncedSearch);
 	const [lastSynced, setLastSynced] = useState(syncedSearch);
+	const [filtersOpen, setFiltersOpen] = useState(false);
 
 	if (lastSynced !== syncedSearch) {
 		setLastSynced(syncedSearch);
 		setSearchInput(syncedSearch);
 	}
+
+	const hasActiveFilters = Boolean(
+		params.status || params.sort || params.search,
+	);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -66,7 +71,7 @@ export function AchievementFilters({
 
 	return (
 		<div className="flex flex-wrap items-center gap-2 lg:pb-4 lg:border-b lg:border-mc-border/40">
-			<div className="relative flex-1 min-w-[12rem]">
+			<div className="relative flex-1 min-w-0 sm:min-w-[12rem]">
 				<span className="absolute left-3 top-1/2 -translate-y-1/2 text-mc-stone-light text-sm pointer-events-none select-none">
 					🔍
 				</span>
@@ -84,51 +89,71 @@ export function AchievementFilters({
 				</kbd>
 			</div>
 
-			<select
-				aria-label="Status"
-				value={params.status ?? ""}
-				onChange={(e) =>
-					onChange({
-						status:
-							(e.target.value as AchievementStatus) || undefined,
-					})
-				}
-				className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
-			>
-				<option value="">Any status</option>
-				<option value="completed">Completed</option>
-				<option value="uncompleted">Uncompleted</option>
-			</select>
-
-			<select
-				aria-label="Sort by"
-				value={params.sort ?? ""}
-				onChange={(e) =>
-					onChange({
-						sort: (e.target.value as SortField) || undefined,
-					})
-				}
-				className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
-			>
-				<option value="">Default sort</option>
-				{(Object.keys(SORT_LABELS) as SortField[]).map((key) => (
-					<option key={key} value={key}>
-						{SORT_LABELS[key]}
-					</option>
-				))}
-			</select>
-
 			<PixelButton
 				variant="stone"
-				onClick={() => onChange({ desc: !params.desc })}
-				title={params.desc ? "Sort descending" : "Sort ascending"}
+				onClick={() => setFiltersOpen((v) => !v)}
+				className="lg:hidden relative"
+				aria-expanded={filtersOpen}
 			>
-				{params.desc ? "↓ Desc" : "↑ Asc"}
+				Filters
+				{hasActiveFilters && (
+					<span
+						className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-mc-gold"
+						aria-hidden
+					/>
+				)}
 			</PixelButton>
 
-			<PixelButton variant="red" onClick={onClear}>
-				Clear
-			</PixelButton>
+			<div
+				className={`${filtersOpen ? "flex" : "hidden"} lg:flex flex-wrap items-center gap-2 w-full lg:w-auto`}
+			>
+				<select
+					aria-label="Status"
+					value={params.status ?? ""}
+					onChange={(e) =>
+						onChange({
+							status:
+								(e.target.value as AchievementStatus) ||
+								undefined,
+						})
+					}
+					className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
+				>
+					<option value="">Any status</option>
+					<option value="completed">Completed</option>
+					<option value="uncompleted">Uncompleted</option>
+				</select>
+
+				<select
+					aria-label="Sort by"
+					value={params.sort ?? ""}
+					onChange={(e) =>
+						onChange({
+							sort: (e.target.value as SortField) || undefined,
+						})
+					}
+					className="rounded-sm min-w-[8rem] px-2 py-2 text-sm bg-mc-stone-dark text-foreground border-[3px] border-mc-border shadow-[inset_2px_2px_4px_rgba(0,0,0,0.4),inset_-1px_-1px_0_rgba(255,255,255,0.05)] cursor-pointer"
+				>
+					<option value="">Default sort</option>
+					{(Object.keys(SORT_LABELS) as SortField[]).map((key) => (
+						<option key={key} value={key}>
+							{SORT_LABELS[key]}
+						</option>
+					))}
+				</select>
+
+				<PixelButton
+					variant="stone"
+					onClick={() => onChange({ desc: !params.desc })}
+					title={params.desc ? "Sort descending" : "Sort ascending"}
+				>
+					{params.desc ? "↓ Desc" : "↑ Asc"}
+				</PixelButton>
+
+				<PixelButton variant="red" onClick={onClear}>
+					Clear
+				</PixelButton>
+			</div>
 		</div>
 	);
 }

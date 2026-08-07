@@ -160,6 +160,81 @@ function AchievementRow({
 	);
 }
 
+function AchievementCard({
+	view,
+	index,
+}: {
+	view: AchievementView;
+	index: number;
+}) {
+	const icon = gameIconUrl(view.game);
+	const unlockPct = Number.isFinite(view.globalPercentUnlocked)
+		? Math.min(100, Math.max(0, view.globalPercentUnlocked))
+		: 0;
+	const unlockColor =
+		unlockPct >= 50
+			? "text-mc-stone-light"
+			: unlockPct >= 10
+				? "text-mc-sky"
+				: "text-mc-gold";
+
+	return (
+		<div
+			className={`flex gap-2.5 p-2.5 border-b border-black/35 ${
+				index % 2 === 0 ? "bg-white/[0.025]" : "bg-black/15"
+			} ${view.completed ? "border-l-[3px] border-l-mc-grass" : ""}`}
+			data-completed={view.completed ? "true" : "false"}
+		>
+			<div className="shrink-0 w-5 flex justify-center pt-0.5">
+				{icon && (
+					<PixelImg
+						src={icon}
+						alt={formatGameLabel(view.game)}
+						title={formatGameLabel(view.game)}
+						width={20}
+						height={20}
+						className="inline-block"
+					/>
+				)}
+			</div>
+			<div className="flex-1 min-w-0 space-y-1">
+				<div className="flex items-start justify-between gap-2">
+					<span className="font-[family-name:var(--font-pixel)] text-xs text-white leading-tight">
+						{view.name}
+					</span>
+					<span className="font-[family-name:var(--font-pixel)] text-mc-grass text-xs tabular-nums shrink-0">
+						{formatReward(view)}
+						{view.type === "ONE_TIME" ? " AP" : ""}
+					</span>
+				</div>
+				<p className="text-white/90 leading-snug text-xs">
+					{view.description}
+				</p>
+				<div className="flex items-center justify-between gap-2 pt-0.5">
+					{view.type === "TIERED" ? (
+						<span className="font-[family-name:var(--font-pixel)] text-[0.65rem] text-mc-stone-light">
+							Tier{" "}
+							<span className="text-white">{view.currentTier}</span>
+							<span> / {view.maxTier}</span>
+						</span>
+					) : (
+						<span
+							className={`font-[family-name:var(--font-pixel)] text-[0.65rem] tabular-nums ${unlockColor}`}
+						>
+							{formatPercent(unlockPct)}% unlocked
+						</span>
+					)}
+					{view.completed && (
+						<span className="font-[family-name:var(--font-pixel)] text-[0.6rem] text-mc-grass shrink-0">
+							✓ Done
+						</span>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}
+
 function AchievementTableHead({
 	params,
 	variant,
@@ -244,7 +319,7 @@ function VirtualizedAchievementTable({
 			: 0;
 
 	return (
-		<div ref={scrollRef} className="max-h-[min(70vh,36rem)] overflow-auto">
+		<div ref={scrollRef} className="h-[min(70vh,36rem)] overflow-auto">
 			<table className="w-full table-fixed border-collapse relative">
 				<AchievementTableHead
 					params={params}
@@ -292,6 +367,53 @@ function VirtualizedAchievementTable({
 	);
 }
 
+function VirtualizedAchievementCardList({
+	views,
+}: {
+	views: AchievementView[];
+}) {
+	"use no memo";
+	const scrollRef = useRef<HTMLDivElement>(null);
+	// eslint-disable-next-line react-hooks/incompatible-library -- opted out of compiler via "use no memo" above
+	const rowVirtualizer = useVirtualizer({
+		count: views.length,
+		getScrollElement: () => scrollRef.current,
+		estimateSize: () => 96,
+		overscan: 8,
+	});
+
+	const virtualRows = rowVirtualizer.getVirtualItems();
+	const paddingTop = virtualRows.length > 0 ? virtualRows[0].start : 0;
+	const paddingBottom =
+		virtualRows.length > 0
+			? rowVirtualizer.getTotalSize() -
+				virtualRows[virtualRows.length - 1].end
+			: 0;
+
+	return (
+		<div ref={scrollRef} className="h-[min(70vh,36rem)] overflow-auto">
+			<div className="relative">
+				{paddingTop > 0 && (
+					<div aria-hidden style={{ height: paddingTop }} />
+				)}
+				{virtualRows.map((virtualRow) => {
+					const view = views[virtualRow.index];
+					return (
+						<AchievementCard
+							key={`${view.game}-${view.codeName}`}
+							view={view}
+							index={virtualRow.index}
+						/>
+					);
+				})}
+				{paddingBottom > 0 && (
+					<div aria-hidden style={{ height: paddingBottom }} />
+				)}
+			</div>
+		</div>
+	);
+}
+
 function AchievementTable({
 	title,
 	views,
@@ -327,30 +449,51 @@ function AchievementTable({
 						{emptyMessage}
 					</p>
 				</div>
-			) : virtualize ? (
-				<VirtualizedAchievementTable
-					views={views}
-					params={params}
-					variant={variant}
-					onSort={onSort}
-				/>
 			) : (
-				<table className="w-full table-fixed border-collapse relative">
-					<AchievementTableHead
-						params={params}
-						variant={variant}
-						onSort={onSort}
-					/>
-					<tbody>
-						{views.map((view, index) => (
-							<AchievementRow
-								key={`${view.game}-${view.codeName}`}
-								view={view}
-								index={index}
+				<>
+					{/* Desktop: table layout */}
+					<div className="hidden lg:block">
+						{virtualize ? (
+							<VirtualizedAchievementTable
+								views={views}
+								params={params}
+								variant={variant}
+								onSort={onSort}
 							/>
-						))}
-					</tbody>
-				</table>
+						) : (
+							<table className="w-full table-fixed border-collapse relative">
+								<AchievementTableHead
+									params={params}
+									variant={variant}
+									onSort={onSort}
+								/>
+								<tbody>
+									{views.map((view, index) => (
+										<AchievementRow
+											key={`${view.game}-${view.codeName}`}
+											view={view}
+											index={index}
+										/>
+									))}
+								</tbody>
+							</table>
+						)}
+					</div>
+					{/* Mobile: card layout */}
+					<div className="block lg:hidden">
+						{virtualize ? (
+							<VirtualizedAchievementCardList views={views} />
+						) : (
+							views.map((view, index) => (
+								<AchievementCard
+									key={`${view.game}-${view.codeName}`}
+									view={view}
+									index={index}
+								/>
+							))
+						)}
+					</div>
+				</>
 			)}
 		</CollapsibleSection>
 	);
