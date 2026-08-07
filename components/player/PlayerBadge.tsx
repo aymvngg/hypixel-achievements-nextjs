@@ -1,9 +1,12 @@
 import type { PlayerBadgeType } from "@/lib/util/special-players";
 
-const STYLES: Record<PlayerBadgeType, { label: string; color: string }> = {
+export const PLAYER_TAG_STYLES: Record<
+	PlayerBadgeType,
+	{ label: string; color: string }
+> = {
 	owner: {
 		label: "OWNER",
-		color: "var(--color-mc-gold)",
+		color: "#8e2be2",
 	},
 	"early-tester": {
 		label: "EARLY TESTER",
@@ -19,15 +22,36 @@ const STYLES: Record<PlayerBadgeType, { label: string; color: string }> = {
 	},
 	bored: {
 		label: "BORED",
-		color: "var(--color-mc-red)",
+		color: "#ff5555",
 	},
 };
 
-export function PlayerBadge({ type }: { type: PlayerBadgeType }) {
+const STYLES = PLAYER_TAG_STYLES;
+
+/** How the tag renders relative to the player name. */
+export type TagDisplayVariant = "inline" | "small" | "block" | "pill";
+
+export function PlayerBadge({
+	type,
+	variant = "pill",
+}: {
+	type: PlayerBadgeType;
+	variant?: TagDisplayVariant;
+}) {
 	const { label, color } = STYLES[type];
+	const style =
+		variant === "inline"
+			? "whitespace-nowrap"
+			: variant === "small"
+				? "whitespace-nowrap text-[0.72em] align-middle"
+				: variant === "pill"
+					? "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] font-[family-name:var(--font-pixel)] border-2 rounded-sm leading-none uppercase tracking-wide align-middle bg-black/30 border-mc-border"
+					: "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] border-2 rounded-sm leading-none uppercase tracking-wide align-middle bg-black/30 border-mc-border";
 	return (
-		<span className="whitespace-nowrap" style={{ color }}>
-			[{label}]
+		<span className={style} style={{ color }}>
+			{variant === "block" || variant === "pill"
+				? label
+				: `[${label}]`}
 		</span>
 	);
 }
