@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
 			revalidate: 30,
 			expire: 30,
 		},
+		hypixelCounts: {
+			stale: 120,
+			revalidate: 120,
+			expire: 120,
+		},
 	},
 	images: {
 		remotePatterns: [

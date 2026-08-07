@@ -110,6 +110,13 @@ async function main() {
 		JSON.stringify(player, null, "\t"),
 	);
 
+	console.log("Fetching current player counts...");
+	const counts = await hypixel("/counts");
+	await writeFile(
+		join(demoDir, "counts.json"),
+		JSON.stringify(counts, null, "\t"),
+	);
+
 	console.log(`\nDone. Fixtures written to ${demoDir}`);
 	console.log("Start the app with DEMO_MODE=true to use them.");
 }

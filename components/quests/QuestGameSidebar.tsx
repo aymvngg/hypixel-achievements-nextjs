@@ -6,6 +6,7 @@ import { PixelImg } from "@/components/ui/PixelImg";
 import type { GameStat } from "@/lib/logic/achievement-stats";
 import type { QuestSearchParams } from "@/lib/util/quest-filters";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
+import { formatPlayerCount } from "@/lib/util/gamecounts";
 
 const PF = "font-[family-name:var(--font-pixel)]";
 
@@ -14,12 +15,14 @@ function GameNavItem({
 	label,
 	stat,
 	icon,
+	count,
 	onSelect,
 }: {
 	active: boolean;
 	label: string;
 	stat: GameStat;
 	icon?: string | null;
+	count?: number;
 	onSelect: () => void;
 }) {
 	const pct = stat.total > 0 ? (stat.completed / stat.total) * 100 : 0;
@@ -49,15 +52,25 @@ function GameNavItem({
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center justify-between gap-2">
 						<span
-							className={`truncate ${PF} text-xs ${active ? "text-mc-sky" : "text-foreground"}`}
+							className={`truncate flex-1 min-w-0 ${PF} text-xs ${active ? "text-mc-sky" : "text-foreground"}`}
 						>
 							{label}
 						</span>
-						<span
-							className={`shrink-0 ${PF} text-[0.65rem] tabular-nums ${active ? "text-mc-sky" : "text-mc-stone-light"}`}
-						>
-							{pct.toFixed(0)}%
-						</span>
+						<div className="flex items-center gap-1.5 shrink-0">
+							{count !== undefined && (
+								<span
+									className={`${PF} text-[0.6rem] tabular-nums ${active ? "text-mc-grass" : "text-mc-stone-light"}`}
+									title={`${count.toLocaleString()} players online`}
+								>
+									{formatPlayerCount(count)}
+								</span>
+							)}
+							<span
+								className={`${PF} text-[0.65rem] tabular-nums ${active ? "text-mc-sky" : "text-mc-stone-light"}`}
+							>
+								{pct.toFixed(0)}%
+							</span>
+						</div>
 					</div>
 					<div className="mt-1 h-1.5 bg-black/40 overflow-hidden">
 						<div
@@ -76,12 +89,14 @@ export function QuestGameSidebar({
 	params,
 	totalStat,
 	gameStats,
+	counts,
 	onGameSelect,
 }: {
 	games: string[];
 	params: QuestSearchParams;
 	totalStat: GameStat;
 	gameStats: Record<string, GameStat>;
+	counts?: Record<string, number>;
 	onGameSelect: (game: string | undefined) => void;
 }) {
 	const sortedGames = [...games].sort((a, b) =>
@@ -136,6 +151,7 @@ export function QuestGameSidebar({
 							}
 						}
 						icon={gameIconUrl(game)}
+						count={counts?.[game]}
 						onSelect={() => {
 							onGameSelect(game);
 							setMobileOpen(false);

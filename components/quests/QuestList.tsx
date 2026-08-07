@@ -4,9 +4,11 @@ import { QuestCard } from "@/components/quests/QuestCard";
 export function QuestList({
 	quests,
 	showGameOnCard,
+	counts,
 }: {
 	quests: QuestView[];
 	showGameOnCard: boolean;
+	counts?: Record<string, number>;
 }) {
 	if (quests.length === 0) {
 		return (
@@ -23,6 +25,7 @@ export function QuestList({
 					key={quest.questId}
 					quest={quest}
 					showGame={showGameOnCard}
+					count={counts?.[quest.game]}
 				/>
 			))}
 		</div>

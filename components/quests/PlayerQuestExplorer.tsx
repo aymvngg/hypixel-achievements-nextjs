@@ -20,10 +20,12 @@ export function PlayerQuestExplorer({
 	initialParams,
 	views,
 	games,
+	counts,
 }: {
 	initialParams: QuestSearchParams;
 	views: QuestView[];
 	games: string[];
+	counts?: Record<string, number>;
 }) {
 	const [params, setParams] = useState(initialParams);
 
@@ -60,13 +62,14 @@ export function PlayerQuestExplorer({
 	return (
 		<div className="flex flex-col lg:flex-row gap-4 items-start">
 			<aside className="w-full lg:w-56 shrink-0 lg:sticky lg:top-6 lg:self-start">
-				<QuestGameSidebar
-					games={games}
-					params={params}
-					totalStat={totalStat}
-					gameStats={gameStats}
-					onGameSelect={(game) => updateParams({ game })}
-				/>
+			<QuestGameSidebar
+				games={games}
+				params={params}
+				totalStat={totalStat}
+				gameStats={gameStats}
+				counts={counts}
+				onGameSelect={(game) => updateParams({ game })}
+			/>
 			</aside>
 			<div className="flex-1 min-w-0 space-y-4">
 				<div className="sticky top-0 z-20 -mx-4 px-4 py-2 bg-background/95 backdrop-blur-sm border-b border-mc-border/40 space-y-2 lg:static lg:mx-0 lg:px-0 lg:py-0 lg:bg-transparent lg:backdrop-blur-none lg:border-b-0">
@@ -82,10 +85,11 @@ export function PlayerQuestExplorer({
 						</p>
 					)}
 				</div>
-			<QuestList
-				quests={filtered}
-				showGameOnCard={showGameOnCard}
-			/>
+		<QuestList
+			quests={filtered}
+			showGameOnCard={showGameOnCard}
+			counts={counts}
+		/>
 			</div>
 		</div>
 	);

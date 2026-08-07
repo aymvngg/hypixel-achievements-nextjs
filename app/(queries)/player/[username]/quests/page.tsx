@@ -79,6 +79,7 @@ async function PlayerQuestsContent({
 				initialParams={filterParams}
 				views={questData.views}
 				games={questData.games}
+				counts={questData.counts}
 			/>
 		</div>
 	);

@@ -189,11 +189,14 @@ export function QuestCard({
 	quest,
 	showGame,
 	hideType,
+	count,
 }: {
 	quest: QuestView;
 	showGame?: boolean;
 	/** Hide type label when quests are already grouped by period. */
 	hideType?: boolean;
+	/** Live player count for this quest's game, if available. */
+	count?: number;
 }) {
 	const type = TYPE_META[quest.type];
 	const status = STATUS_META[quest.status];
@@ -246,9 +249,20 @@ export function QuestCard({
 							)}
 							{showGame && (
 								<span
-									className={`${PF} text-[0.6rem] uppercase text-mc-stone-light`}
+									className={`inline-flex items-center gap-1.5 ${PF} text-[0.65rem] uppercase tracking-wide px-2 py-0.5 rounded-sm border-2 border-mc-border bg-mc-stone-dark text-foreground shadow-[inset_1px_1px_0_rgba(255,255,255,0.06)]`}
 								>
 									{formatGameLabel(quest.game)}
+								</span>
+							)}
+							{showGame && count !== undefined && (
+								<span
+									className={`inline-flex items-center gap-1 ${PF} text-[0.6rem] tabular-nums text-mc-sky`}
+								>
+									<span
+										className="w-1.5 h-1.5 rounded-full bg-mc-grass shadow-[0_0_5px_rgba(85,255,85,0.55)]"
+										aria-hidden
+									/>
+									{count.toLocaleString()} playing
 								</span>
 							)}
 							<span className="flex items-center gap-1.5">

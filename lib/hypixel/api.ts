@@ -9,6 +9,7 @@ import { collectLegacyAchievementKeys } from "@/lib/hypixel/achievement-legacy";
 import type { RawAchievementsResponse } from "@/lib/hypixel/achievement-legacy";
 import {
 	loadDemoAchievementCatalog,
+	loadDemoCounts,
 	loadDemoPlayerRaw,
 	loadDemoQuests,
 } from "@/lib/hypixel/demo";
@@ -50,6 +51,17 @@ export interface RawPlayerResponse {
 		achievementsOneTime?: string[];
 		[key: string]: unknown;
 	};
+}
+
+export interface RawCountsGame {
+	players: number;
+	modes?: Record<string, number>;
+}
+
+export interface RawCountsResponse {
+	success?: boolean;
+	playerCount: number;
+	games: Record<string, RawCountsGame>;
 }
 
 function colorHex(
@@ -197,6 +209,29 @@ async function loadPlayerByUuid(
 	}
 }
 
+async function loadGameCounts(): Promise<CacheResult<RawCountsResponse>> {
+	"use cache: remote";
+	cacheLife("hypixelCounts");
+
+	try {
+		const client = getHypixelClient();
+		const res = (await withRetry(() =>
+			client.getGameCounts({ raw: true }),
+		)) as unknown as RawCountsResponse & { success?: boolean };
+
+		return {
+			ok: true,
+			data: toCacheable({
+				playerCount: res.playerCount ?? 0,
+				games: res.games ?? {},
+			}),
+		};
+	} catch (err) {
+		cacheLife("hypixelError");
+		return { ok: false, error: formatError(err) };
+	}
+}
+
 export async function fetchAchievements(ip: string): Promise<AchievementCatalog> {
 	if (isDemoMode()) return loadDemoAchievementCatalog();
 	return dedupe("achievements", async () => {
@@ -253,5 +288,14 @@ export async function fetchPlayer(
 		const playerResult = await loadPlayerByUuid(uuid);
 		if (!playerResult.ok) throw new Error(playerResult.error);
 		return playerResult.data;
+	});
+}
+
+export async function fetchGameCounts(): Promise<RawCountsResponse> {
+	if (isDemoMode()) return loadDemoCounts();
+	return dedupe("counts", async () => {
+		const result = await loadGameCounts();
+		if (!result.ok) throw new Error(result.error);
+		return result.data;
 	});
 }

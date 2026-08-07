@@ -6,7 +6,11 @@ import type { Achievements } from "hypixel-api-reborn";
 import { collectLegacyAchievementKeys } from "@/lib/hypixel/achievement-legacy";
 import type { RawAchievementsResponse } from "@/lib/hypixel/achievement-legacy";
 import type { RawQuestsResponse } from "@/lib/hypixel/correlate-quests";
-import type { AchievementCatalog, RawPlayerResponse } from "@/lib/hypixel/api";
+import type {
+	AchievementCatalog,
+	RawCountsResponse,
+	RawPlayerResponse,
+} from "@/lib/hypixel/api";
 
 const DEMO_DIR = join(process.cwd(), "demo");
 
@@ -49,4 +53,8 @@ export function loadDemoPlayerRaw(): RawPlayerResponse {
 
 export function loadDemoQuests(): RawQuestsResponse {
 	return readFixture<RawQuestsResponse>("quests.json");
+}
+
+export function loadDemoCounts(): RawCountsResponse {
+	return readFixture<RawCountsResponse>("counts.json");
 }
