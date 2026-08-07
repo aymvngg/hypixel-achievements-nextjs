@@ -6,8 +6,11 @@ describe("getPlayerBadge", () => {
 		expect(getPlayerBadge("c6b017cf334b4e1498e3a24a54b72afc")).toBe(
 			"early-tester",
 		);
+	});
+
+	it("returns mommy for known mommy UUIDs", () => {
 		expect(getPlayerBadge("bc83916ce9784f56910c3db74703004d")).toBe(
-			"early-tester",
+			"mommy",
 		);
 	});
 
