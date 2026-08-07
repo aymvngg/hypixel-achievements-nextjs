@@ -45,8 +45,8 @@ export function PlayerBadge({
 			: variant === "small"
 				? "whitespace-nowrap text-[0.72em] align-middle"
 				: variant === "pill"
-					? "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] font-[family-name:var(--font-pixel)] border-2 rounded-sm leading-none uppercase tracking-wide align-middle bg-black/30 border-mc-border"
-					: "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] border-2 rounded-sm leading-none uppercase tracking-wide align-middle bg-black/30 border-mc-border";
+					? "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] font-[family-name:var(--font-pixel)] border-2 rounded-sm leading-none uppercase bg-black/30 border-mc-border"
+					: "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] border-2 rounded-sm leading-none uppercase bg-black/30 border-mc-border";
 	return (
 		<span className={style} style={{ color }}>
 			{variant === "block" || variant === "pill"

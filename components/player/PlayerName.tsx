@@ -26,7 +26,11 @@ export function PlayerName({
 	const badge = getPlayerBadge(player.uuid);
 
 	return (
-		<span className={`min-w-0 ${className}`}>
+		<span
+			className={`inline-flex items-center min-w-0 ${
+				stackOnMobile ? "flex-wrap" : ""
+			} ${className}`}
+		>
 			<span className="whitespace-nowrap">
 				{hasDisplayableRank(player.rank) && (
 					<RankPrefix
@@ -40,11 +44,11 @@ export function PlayerName({
 			</span>
 			{badge && (
 				<span
-					className={`inline-flex items-center align-middle ${
+					className={
 						stackOnMobile
-							? "block sm:inline-flex mt-1 sm:mt-0 sm:ml-1.5"
+							? "w-full mt-1 sm:w-auto sm:mt-0 sm:ml-1.5"
 							: "ml-1.5"
-					}`}
+					}
 				>
 					<PlayerBadge type={badge} />
 				</span>

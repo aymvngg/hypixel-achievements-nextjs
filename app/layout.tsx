@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import localFont from "next/font/local";
 import Link from "next/link";
 import { Suspense } from "react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -11,24 +10,6 @@ const inter = Inter({
 	subsets: ["latin"],
 	weight: ["400", "700"],
 	display: "swap",
-});
-
-const minecraft = localFont({
-	src: [
-		{
-			path: "./fonts/minecraft.woff2",
-			weight: "400",
-			style: "normal",
-		},
-		{
-			path: "./fonts/minecraft.woff",
-			weight: "400",
-			style: "normal",
-		},
-	],
-	variable: "--font-pixel",
-	display: "swap",
-	fallback: ["monospace"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +23,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className={`${inter.variable} ${minecraft.variable}`}>
+		<html lang="en" className={`${inter.variable}`}>
 			<body className="min-h-dvh flex flex-col bg-background text-foreground font-sans antialiased overflow-x-hidden">
 				<Suspense
 					fallback={
