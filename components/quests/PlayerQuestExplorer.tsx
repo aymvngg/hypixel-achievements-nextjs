@@ -56,7 +56,6 @@ export function PlayerQuestExplorer({
 	const { gameStats, totalStat } = computeQuestGameStats(views);
 	const showingFiltered = filtered.length !== views.length;
 	const showGameOnCard = !params.game;
-	const groupByType = !params.type;
 
 	return (
 		<div className="flex flex-col lg:flex-row gap-4 items-start">
@@ -83,11 +82,10 @@ export function PlayerQuestExplorer({
 						</p>
 					)}
 				</div>
-				<QuestList
-					quests={filtered}
-					groupByType={groupByType}
-					showGameOnCard={showGameOnCard}
-				/>
+			<QuestList
+				quests={filtered}
+				showGameOnCard={showGameOnCard}
+			/>
 			</div>
 		</div>
 	);

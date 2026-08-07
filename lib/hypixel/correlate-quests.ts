@@ -11,7 +11,7 @@ import {
 	filterQuestGames,
 	normalizeQuestGameKey,
 } from "@/lib/util/quest-games";
-import { isWithinPeriod } from "@/lib/util/quest-resets";
+import { getPeriodStart } from "@/lib/util/quest-resets";
 
 export interface RawQuestObjective {
 	id: string;
@@ -58,8 +58,7 @@ function objectiveTarget(obj: RawQuestObjective): number {
 
 function latestCompletionInPeriod(
 	entry: PlayerQuestEntry | undefined,
-	type: QuestResetType,
-	now = Date.now(),
+	periodStart: number,
 ): number | undefined {
 	const completions = entry?.completions;
 	if (!completions?.length) return undefined;
@@ -67,7 +66,7 @@ function latestCompletionInPeriod(
 	let latest: number | undefined;
 	for (const completion of completions) {
 		const time = completion.time ?? completion.timeCompleted;
-		if (!time || !isWithinPeriod(time, type, now)) continue;
+		if (!time || time < periodStart) continue;
 		if (!latest || time > latest) latest = time;
 	}
 	return latest;
@@ -103,14 +102,14 @@ function buildObjectives(
 function deriveStatus(
 	type: QuestResetType,
 	entry: PlayerQuestEntry | undefined,
-	now = Date.now(),
+	periodStart: number,
 ): {
 	status: QuestStatus;
 	startedAt?: number;
 	completedAt?: number;
 	activeObjectives?: Record<string, number>;
 } {
-	const completedAt = latestCompletionInPeriod(entry, type, now);
+	const completedAt = latestCompletionInPeriod(entry, periodStart);
 	if (completedAt !== undefined) {
 		return { status: "completed", completedAt };
 	}
@@ -153,6 +152,11 @@ export function correlateQuests(
 	now = Date.now(),
 ): QuestView[] {
 	const results: QuestView[] = [];
+	const periodStarts: Record<QuestResetType, number> = {
+		DAILY: getPeriodStart("DAILY", now),
+		WEEKLY: getPeriodStart("WEEKLY", now),
+		MONTHLY: getPeriodStart("MONTHLY", now),
+	};
 
 	for (const [apiGame, quests] of Object.entries(questDefs.quests)) {
 		const game = normalizeQuestGameKey(apiGame);
@@ -166,7 +170,7 @@ export function correlateQuests(
 
 			const entry = playerQuests[def.id];
 			const { status, startedAt, completedAt, activeObjectives } =
-				deriveStatus(type, entry, now);
+				deriveStatus(type, entry, periodStarts[type]);
 			const objectives = buildObjectives(
 				def.objectives,
 				status,

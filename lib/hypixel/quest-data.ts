@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import type { PublicPlayerData, QuestView } from "@/lib/hypixel/types";
 import {
 	fetchPlayer,
@@ -17,19 +18,19 @@ export interface QuestPageData {
 	games: string[];
 }
 
-export async function getPlayerQuestPageData(
-	query: string,
-): Promise<QuestPageData> {
-	const [questDefs, player] = await Promise.all([
-		fetchQuests(),
-		fetchPlayer(query),
-	]);
+export const getPlayerQuestPageData = cache(
+	async (query: string): Promise<QuestPageData> => {
+		const [questDefs, player] = await Promise.all([
+			fetchQuests(),
+			fetchPlayer(query),
+		]);
 
-	const views = correlateQuests(questDefs, player.quests);
+		const views = correlateQuests(questDefs, player.quests);
 
-	return {
-		player: toPublicPlayerData(player),
-		views,
-		games: getQuestGameNames(views),
-	};
-}
+		return {
+			player: toPublicPlayerData(player),
+			views,
+			games: getQuestGameNames(views),
+		};
+	},
+);

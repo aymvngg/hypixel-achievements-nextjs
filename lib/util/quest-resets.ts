@@ -3,6 +3,18 @@ import type { QuestResetType } from "@/lib/hypixel/types";
 /** Hypixel quest periods use Eastern Time (server local time). */
 const HYPIXEL_TZ = "America/New_York";
 
+const ET_FORMATTER = new Intl.DateTimeFormat("en-US", {
+	timeZone: HYPIXEL_TZ,
+	year: "numeric",
+	month: "2-digit",
+	day: "2-digit",
+	weekday: "short",
+	hour: "2-digit",
+	minute: "2-digit",
+	second: "2-digit",
+	hourCycle: "h23",
+});
+
 const WEEKDAY: Record<string, number> = {
 	Sun: 0,
 	Mon: 1,
@@ -24,17 +36,7 @@ interface EasternWallTime {
 }
 
 function readEasternWallTime(ms: number): EasternWallTime {
-	const parts = new Intl.DateTimeFormat("en-US", {
-		timeZone: HYPIXEL_TZ,
-		year: "numeric",
-		month: "2-digit",
-		day: "2-digit",
-		weekday: "short",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-		hourCycle: "h23",
-	}).formatToParts(new Date(ms));
+	const parts = ET_FORMATTER.formatToParts(new Date(ms));
 
 	const get = (type: Intl.DateTimeFormatPartTypes) =>
 		parts.find((p) => p.type === type)?.value ?? "";
