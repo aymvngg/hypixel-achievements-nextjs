@@ -3,9 +3,15 @@ import "server-only";
 import { cacheLife } from "next/cache";
 import type { Achievements } from "hypixel-api-reborn";
 import { Player } from "hypixel-api-reborn";
+import { isDemoMode } from "@/lib/env";
 import { getHypixelClient } from "@/lib/hypixel/client";
 import { collectLegacyAchievementKeys } from "@/lib/hypixel/achievement-legacy";
 import type { RawAchievementsResponse } from "@/lib/hypixel/achievement-legacy";
+import {
+	loadDemoAchievementCatalog,
+	loadDemoPlayerRaw,
+	loadDemoQuests,
+} from "@/lib/hypixel/demo";
 import { correlateAchievements, getGameNames } from "@/lib/hypixel/correlate";
 import type { RawQuestsResponse } from "@/lib/hypixel/correlate-quests";
 import { isUuid, normalizeUuid } from "@/lib/util/validate";
@@ -39,7 +45,7 @@ function dedupe<T>(key: string, operation: () => Promise<T>): Promise<T> {
 	return promise;
 }
 
-interface RawPlayerResponse {
+export interface RawPlayerResponse {
 	player?: {
 		achievementsOneTime?: string[];
 		[key: string]: unknown;
@@ -192,6 +198,7 @@ async function loadPlayerByUuid(
 }
 
 export async function fetchAchievements(ip: string): Promise<AchievementCatalog> {
+	if (isDemoMode()) return loadDemoAchievementCatalog();
 	return dedupe("achievements", async () => {
 		guardUpstream({ ip, playerKey: "achievements", cacheWindowMs: 86_400_000 });
 		const result = await loadAchievements();
@@ -201,6 +208,7 @@ export async function fetchAchievements(ip: string): Promise<AchievementCatalog>
 }
 
 export async function fetchQuests(ip: string): Promise<RawQuestsResponse> {
+	if (isDemoMode()) return loadDemoQuests();
 	return dedupe("quests", async () => {
 		guardUpstream({ ip, playerKey: "quests", cacheWindowMs: 86_400_000 });
 		const result = await loadQuests();
@@ -213,6 +221,7 @@ export async function fetchPlayer(
 	query: string,
 	ip: string,
 ): Promise<PlayerData> {
+	if (isDemoMode()) return parsePlayerData(loadDemoPlayerRaw());
 	const key = `player:${query.trim().toLowerCase()}`;
 	return dedupe(key, async () => {
 		const normalizedQuery = query.trim();
