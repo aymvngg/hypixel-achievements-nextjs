@@ -81,9 +81,7 @@ docker compose up -d --build
 ## Project structure
 
 ```
-app/                 # App Router pages + API routes
-  api/player/[username]  # Player + achievement data endpoint
-  api/compare            # Comparison endpoint
+app/                 # App Router pages
   player/[username]      # Achievement browser + breakdown pages
   compare/               # Compare page
 components/          # React components (pages, UI, layout)
