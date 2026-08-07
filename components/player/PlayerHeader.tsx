@@ -31,11 +31,11 @@ export function PlayerHeader({
 				</div>
 
 				<div className="flex flex-col justify-center min-w-0">
-					<h1 className="font-[family-name:var(--font-pixel)] text-xl sm:text-3xl tracking-[0.06em] leading-tight [text-shadow:2px_2px_0_rgba(0,0,0,0.45)] min-w-0">
+					<h1 className="font-[family-name:var(--font-pixel)] text-xl sm:text-3xl tracking-[0.06em] leading-tight [text-shadow:2px_2px_0_rgba(0,0,0,0.45)] min-w-0 overflow-hidden">
 						<PlayerName
 							player={player}
 							fallback={query}
-							stackBadge
+							stackOnMobile
 						/>
 					</h1>
 				</div>

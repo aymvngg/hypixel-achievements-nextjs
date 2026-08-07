@@ -200,7 +200,7 @@ async function loadPlayerByUuid(
 export async function fetchAchievements(ip: string): Promise<AchievementCatalog> {
 	if (isDemoMode()) return loadDemoAchievementCatalog();
 	return dedupe("achievements", async () => {
-		guardUpstream({ ip, playerKey: "achievements", cacheWindowMs: 86_400_000 });
+		await guardUpstream({ ip, playerKey: "achievements", cacheWindowMs: 86_400_000 });
 		const result = await loadAchievements();
 		if (!result.ok) throw new Error(result.error);
 		return result.data;
@@ -210,7 +210,7 @@ export async function fetchAchievements(ip: string): Promise<AchievementCatalog>
 export async function fetchQuests(ip: string): Promise<RawQuestsResponse> {
 	if (isDemoMode()) return loadDemoQuests();
 	return dedupe("quests", async () => {
-		guardUpstream({ ip, playerKey: "quests", cacheWindowMs: 86_400_000 });
+		await guardUpstream({ ip, playerKey: "quests", cacheWindowMs: 86_400_000 });
 		const result = await loadQuests();
 		if (!result.ok) throw new Error(result.error);
 		return result.data;
@@ -226,10 +226,10 @@ export async function fetchPlayer(
 	return dedupe(key, async () => {
 		const normalizedQuery = query.trim();
 		const playerKey = normalizedQuery.toLowerCase();
-		// UUID lookups are cached for 6h; name lookups resolve to a UUID first
+		// UUID lookups are cached for 24h; name lookups resolve to a UUID first
 		// (Mojang fetch) then hit the player cache. Treat the player loader as
 		// warm for its 5-minute cacheLife so cache hits don't burn budget.
-		guardUpstream({
+		await guardUpstream({
 			ip,
 			playerKey: isUuid(normalizedQuery)
 				? `player:${normalizeUuid(playerKey)}`

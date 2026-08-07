@@ -5,12 +5,15 @@ import opentype from "opentype.js";
 import { MINECRAFT_PLUS_RAISE_EM } from "@/lib/font/minecraft-metrics";
 
 function glyphCenterY(glyph: opentype.Glyph): number {
-	return (glyph.yMax + glyph.yMin) / 2;
+	const { y1, y2 } = (
+		glyph as unknown as { getBoundingBox: () => { y1: number; y2: number } }
+	).getBoundingBox();
+	return (y2 + y1) / 2;
 }
 
 describe("minecraft font plus alignment", () => {
-	it("matches glyph metrics from minecraft.woff", () => {
-		const fontPath = path.join(process.cwd(), "app/fonts/minecraft.woff");
+	it("matches glyph metrics from minecraft.ttf", () => {
+		const fontPath = path.join(process.cwd(), "public/fonts/minecraft.ttf");
 		const buffer = fs.readFileSync(fontPath);
 		const exactBuffer = buffer.buffer.slice(
 			buffer.byteOffset,

@@ -41,6 +41,12 @@ describe("getPlayerBadge", () => {
 		);
 	});
 
+	it("returns bored for the bored UUID", () => {
+		expect(getPlayerBadge("9454febb6d4848938bc757b905dd60f0")).toBe(
+			"bored",
+		);
+	});
+
 	it("returns null for unknown UUIDs", () => {
 		expect(getPlayerBadge("00000000000000000000000000000000")).toBeNull();
 	});

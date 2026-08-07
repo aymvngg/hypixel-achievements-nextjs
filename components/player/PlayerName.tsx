@@ -8,12 +8,12 @@ export function PlayerName({
 	player,
 	fallback,
 	className = "",
-	stackBadge = false,
+	stackOnMobile = false,
 }: {
 	player: PublicPlayerData;
 	fallback?: string;
 	className?: string;
-	stackBadge?: boolean;
+	stackOnMobile?: boolean;
 }) {
 	const nickname =
 		player.nickname && player.nickname !== "UNKNOWN"
@@ -27,15 +27,11 @@ export function PlayerName({
 
 	return (
 		<span
-			className={`min-w-0 ${
-				stackBadge
-					? "flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5"
-					: "block truncate"
+			className={`inline-flex items-center min-w-0 ${
+				stackOnMobile ? "flex-wrap" : ""
 			} ${className}`}
 		>
-			<span
-				className={`whitespace-nowrap ${stackBadge ? "min-w-0 overflow-hidden text-ellipsis" : ""}`}
-			>
+			<span className="whitespace-nowrap">
 				{hasDisplayableRank(player.rank) && (
 					<RankPrefix
 						rank={player.rank}
@@ -49,9 +45,9 @@ export function PlayerName({
 			{badge && (
 				<span
 					className={
-						stackBadge
-							? "shrink-0"
-							: "ml-1.5 align-middle shrink-0"
+						stackOnMobile
+							? "w-full mt-1 sm:w-auto sm:mt-0 sm:ml-1.5"
+							: "ml-1.5"
 					}
 				>
 					<PlayerBadge type={badge} />

@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
 		];
 	},
 	cacheHandlers: {
-		remote: require.resolve("./cache-handlers/disk-handler.js"),
+		remote: require.resolve("./cache-handlers/redis-handler.js"),
 	},
 	cacheLife: {
 		hypixelAchievements: {
@@ -29,8 +29,8 @@ const nextConfig: NextConfig = {
 		},
 		hypixelUuid: {
 			stale: 300,
-			revalidate: 21_600,
-			expire: 21_600,
+			revalidate: 86_400,
+			expire: 86_400,
 		},
 		hypixelError: {
 			stale: 0,

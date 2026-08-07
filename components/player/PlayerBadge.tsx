@@ -1,32 +1,61 @@
 import type { PlayerBadgeType } from "@/lib/util/special-players";
 
-const STYLES: Record<PlayerBadgeType, { label: string; className: string }> = {
+export const PLAYER_TAG_STYLES: Record<
+	PlayerBadgeType,
+	{ label: string; color: string }
+> = {
 	owner: {
-		label: "Owner",
-		className: "bg-mc-gold/20 text-mc-gold border-mc-gold/40",
+		label: "OWNER",
+		color: "#8e2be2",
 	},
 	"early-tester": {
-		label: "Early Tester",
-		className: "bg-mc-sky/20 text-mc-sky border-mc-sky/40",
+		label: "EARLY TESTER",
+		color: "var(--color-mc-sky)",
 	},
 	mommy: {
-		label: "❤️ Mommy ❤️",
-		className: "bg-[#ff69b4]/20 text-[#ff69b4] border-[#ff69b4]/50",
+		label: "❤️MOMMY❤️",
+		color: "#ff69b4",
 	},
 	technoblade: {
-		label: "Never Dies",
-		className: "bg-[#2a0f2a]/80 text-[#ff55ff] border-[#ff55ff]/50",
+		label: "NEVER DIES",
+		color: "#ff55ff",
+	},
+	bored: {
+		label: "BORED",
+		color: "#ff5555",
+	},
+	ladybug: {
+		label: "LADYBUG",
+		color: "#c1fefa",
 	},
 };
 
-export function PlayerBadge({ type }: { type: PlayerBadgeType }) {
-	const { label, className } = STYLES[type];
+const STYLES = PLAYER_TAG_STYLES;
+
+/** How the tag renders relative to the player name. */
+export type TagDisplayVariant = "inline" | "small" | "block" | "pill";
+
+export function PlayerBadge({
+	type,
+	variant = "pill",
+}: {
+	type: PlayerBadgeType;
+	variant?: TagDisplayVariant;
+}) {
+	const { label, color } = STYLES[type];
+	const style =
+		variant === "inline"
+			? "whitespace-nowrap"
+			: variant === "small"
+				? "whitespace-nowrap text-[0.72em] align-middle"
+				: variant === "pill"
+					? "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] font-[family-name:var(--font-pixel)] border-2 rounded-sm leading-none uppercase bg-black/30 border-mc-border"
+					: "whitespace-nowrap inline-flex items-center px-1.5 py-0.5 text-[0.65em] border-2 rounded-sm leading-none uppercase bg-black/30 border-mc-border";
 	return (
-		<span
-			className={`inline-flex items-center px-1.5 py-0.5 text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase tracking-wide border rounded-sm align-middle ${className}`}
-			title={label}
-		>
-			{label}
+		<span className={style} style={{ color }}>
+			{variant === "block" || variant === "pill"
+				? label
+				: `[${label}]`}
 		</span>
 	);
 }

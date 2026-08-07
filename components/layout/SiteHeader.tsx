@@ -52,13 +52,13 @@ export function SiteHeader() {
 						>
 							Home
 						</Link>
-						<Link
-							href="/compare"
-							className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors"
-						>
-							Compare
-						</Link>
-					</nav>
+					<Link
+						href="/compare"
+						className="px-3 py-1.5 border-2 border-transparent text-mc-stone-light hover:text-mc-gold hover:border-mc-border/60 hover:bg-black/15 transition-colors"
+					>
+						Compare
+					</Link>
+				</nav>
 				</div>
 
 				{showPlayerSearch ? (

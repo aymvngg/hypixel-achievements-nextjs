@@ -12,7 +12,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 - **AP breakdown** — a per-game table of obtained vs. missing achievement points, completion counts, and totals.
 - **Player comparison** — head-to-head AP comparison across every game, sorted by obtained or missing points, with a plain-language verdict.
 - **Rank display** — formatted player ranks and prefixes.
-- **Caching** — Hypixel and Mojang responses are cached on disk via Next.js 16 Cache Components (`use cache: remote`) with TTLs (achievements definitions 24h, player data 5m, UUID lookups 6h) and deduplicated in-flight requests.
+- **Caching** — Hypixel and Mojang responses are cached via Next.js 16 Cache Components (`use cache: remote`) in Redis with TTLs (achievements/quests definitions 24h, player data 5m, UUID lookups 24h) and deduplicated in-flight requests. When Redis is unavailable the app degrades to uncached (never breaks).
 
 ## Pages
 
@@ -29,7 +29,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 - **Framework:** Next.js 16 (App Router), React 19, TypeScript
 - **Data:** `hypixel-api-reborn`, TanStack Query, TanStack Table
 - **Styling:** Tailwind CSS v4, Minecraft-style theme with the `--font-pixel` display font
-- **Caching:** Next.js 16 Cache Components (`use cache: remote`) with a disk cache handler (`lib/.cache/next-cache`)
+- **Caching:** Next.js 16 Cache Components (`use cache: remote`) with a Redis cache handler (`cache-handlers/redis-handler.js`)
 
 ## Setup
 
@@ -72,7 +72,7 @@ Built with Next.js and the `hypixel-api-reborn` client, with a pixel-art UI them
 
 ## Docker
 
-A multi-stage `Dockerfile` and `docker-compose.yml` are included for production deployment. The compose file wires the app behind a Traefik router on the `proxy` network and persists the response cache in a named volume.
+A multi-stage `Dockerfile` and `docker-compose.yml` are included for production deployment. The compose file wires the app behind a Traefik router on the `proxy` network, runs a shared Redis for the response cache and rate limiting, and persists Redis data in a named volume.
 
 ```bash
 docker compose up -d --build

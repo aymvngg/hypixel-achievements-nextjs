@@ -4,7 +4,9 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // reset the module between tests to get a clean slate.
 async function freshCheck() {
 	vi.resetModules();
-	return await import("@/lib/ratelimit/check");
+	const mod = await import("@/lib/ratelimit/check");
+	mod.__resetBackend();
+	return mod;
 }
 
 function setEnv(overrides: Record<string, string | undefined>) {
@@ -17,6 +19,7 @@ function setEnv(overrides: Record<string, string | undefined>) {
 describe("guardUpstream (cache-aware gate)", () => {
 	beforeEach(() => {
 		setEnv({
+			REDIS_URL: undefined,
 			RATE_LIMIT_PER_IP_MAX: "10",
 			RATE_LIMIT_PER_IP_WINDOW_MS: "60000",
 			RATE_LIMIT_PLAYER_MAX: "2",
@@ -30,58 +33,58 @@ describe("guardUpstream (cache-aware gate)", () => {
 		const { guardUpstream } = await freshCheck();
 		// cacheWindowMs: 0 forces every call to be treated as a cold upstream
 		// miss, so each consumes the per-(IP, player) budget (2 allowed).
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "1.2.3.4", playerKey: "alice", cacheWindowMs: 0 }),
-		).not.toThrow();
-		expect(() =>
+		).resolves.toBeUndefined();
+		await expect(
 			guardUpstream({ ip: "1.2.3.4", playerKey: "alice", cacheWindowMs: 0 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 
 		// Third cold lookup exceeds the per-(IP, player) budget.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "1.2.3.4", playerKey: "alice", cacheWindowMs: 0 }),
-		).toThrow(/too many requests for this player/i);
+		).rejects.toThrow(/too many requests for this player/i);
 	});
 
 	it("allows cache-warm requests without counting against per-IP budget", async () => {
 		const { guardUpstream } = await freshCheck();
 		// Cold: first request consumes per-IP budget.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "9.9.9.9", playerKey: "bob", cacheWindowMs: 300_000 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 		// Cache-warm repeat: no new budget consumed, allowed.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "9.9.9.9", playerKey: "bob", cacheWindowMs: 300_000 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 		// Now a *different* player cold lookup consumes the 2nd per-IP slot.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "9.9.9.9", playerKey: "carol", cacheWindowMs: 300_000 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 		// A 3rd distinct player cold lookup exceeds the distinct-per-IP limit.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "9.9.9.9", playerKey: "dave", cacheWindowMs: 300_000 }),
-		).toThrow(/different players/i);
+		).rejects.toThrow(/different players/i);
 	});
 
 	it("tracks distinct players per IP", async () => {
 		const { guardUpstream } = await freshCheck();
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "8.8.8.8", playerKey: "p1", cacheWindowMs: 300_000 }),
-		).not.toThrow();
-		expect(() =>
+		).resolves.toBeUndefined();
+		await expect(
 			guardUpstream({ ip: "8.8.8.8", playerKey: "p2", cacheWindowMs: 300_000 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 		// 3rd distinct player exceeds the 2-per-IP distinct limit.
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "8.8.8.8", playerKey: "p3", cacheWindowMs: 300_000 }),
-		).toThrow(/different players/i);
+		).rejects.toThrow(/different players/i);
 	});
 
 	it("respects the disabled kill-switch", async () => {
 		setEnv({ RATE_LIMIT_DISABLED: "true" });
 		const { guardUpstream } = await freshCheck();
-		expect(() =>
+		await expect(
 			guardUpstream({ ip: "7.7.7.7", playerKey: "zed", cacheWindowMs: 300_000 }),
-		).not.toThrow();
+		).resolves.toBeUndefined();
 	});
 });
