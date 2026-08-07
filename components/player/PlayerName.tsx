@@ -8,12 +8,10 @@ export function PlayerName({
 	player,
 	fallback,
 	className = "",
-	stackBadge = false,
 }: {
 	player: PublicPlayerData;
 	fallback?: string;
 	className?: string;
-	stackBadge?: boolean;
 }) {
 	const nickname =
 		player.nickname && player.nickname !== "UNKNOWN"
@@ -26,36 +24,21 @@ export function PlayerName({
 	const badge = getPlayerBadge(player.uuid);
 
 	return (
-		<span
-			className={`min-w-0 ${
-				stackBadge
-					? "flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5"
-					: "block truncate"
-			} ${className}`}
-		>
-			<span
-				className={`whitespace-nowrap ${stackBadge ? "min-w-0 overflow-hidden text-ellipsis" : ""}`}
-			>
-				{hasDisplayableRank(player.rank) && (
-					<RankPrefix
-						rank={player.rank}
-						plusColorHex={player.rankPlusColor}
-						prefixColorHex={player.rankPrefixColor}
-						rawPrefix={player.rankPrefix}
-					/>
-				)}
-				<span style={{ color: nicknameColor }}>{nickname}</span>
-			</span>
+		<span className={`whitespace-nowrap min-w-0 ${className}`}>
+			{hasDisplayableRank(player.rank) && (
+				<RankPrefix
+					rank={player.rank}
+					plusColorHex={player.rankPlusColor}
+					prefixColorHex={player.rankPrefixColor}
+					rawPrefix={player.rankPrefix}
+				/>
+			)}
+			<span style={{ color: nicknameColor }}>{nickname}</span>
 			{badge && (
-				<span
-					className={
-						stackBadge
-							? "shrink-0"
-							: "ml-1.5 align-middle shrink-0"
-					}
-				>
+				<>
+					{" "}
 					<PlayerBadge type={badge} />
-				</span>
+				</>
 			)}
 		</span>
 	);

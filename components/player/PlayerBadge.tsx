@@ -1,32 +1,33 @@
 import type { PlayerBadgeType } from "@/lib/util/special-players";
 
-const STYLES: Record<PlayerBadgeType, { label: string; className: string }> = {
+const STYLES: Record<PlayerBadgeType, { label: string; color: string }> = {
 	owner: {
-		label: "Owner",
-		className: "bg-mc-gold/20 text-mc-gold border-mc-gold/40",
+		label: "OWNER",
+		color: "var(--color-mc-gold)",
 	},
 	"early-tester": {
-		label: "Early Tester",
-		className: "bg-mc-sky/20 text-mc-sky border-mc-sky/40",
+		label: "EARLY TESTER",
+		color: "var(--color-mc-sky)",
 	},
 	mommy: {
-		label: "❤️ Mommy ❤️",
-		className: "bg-[#ff69b4]/20 text-[#ff69b4] border-[#ff69b4]/50",
+		label: "❤️MOMMY❤️",
+		color: "#ff69b4",
 	},
 	technoblade: {
-		label: "Never Dies",
-		className: "bg-[#2a0f2a]/80 text-[#ff55ff] border-[#ff55ff]/50",
+		label: "NEVER DIES",
+		color: "#ff55ff",
+	},
+	bored: {
+		label: "BORED",
+		color: "var(--color-mc-red)",
 	},
 };
 
 export function PlayerBadge({ type }: { type: PlayerBadgeType }) {
-	const { label, className } = STYLES[type];
+	const { label, color } = STYLES[type];
 	return (
-		<span
-			className={`inline-flex items-center px-1.5 py-0.5 text-[0.6rem] font-[family-name:var(--font-pixel)] uppercase tracking-wide border rounded-sm align-middle ${className}`}
-			title={label}
-		>
-			{label}
+		<span className="whitespace-nowrap" style={{ color }}>
+			[{label}]
 		</span>
 	);
 }

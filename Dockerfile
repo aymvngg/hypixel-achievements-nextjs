@@ -33,8 +33,6 @@ COPY --from=builder --chown=bun:bun /app/.next/standalone ./
 COPY --from=builder --chown=bun:bun /app/.next/static ./.next/static
 COPY --from=builder --chown=bun:bun /app/cache-handlers ./cache-handlers
 
-RUN mkdir -p lib/.cache && chown -R bun:bun lib/.cache .next
-
 USER bun
 
 EXPOSE 3000

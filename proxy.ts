@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { CLIENT_IP_HEADER } from "@/lib/ratelimit/ip";
+import { getRateLimitBackend } from "@/lib/ratelimit/check";
 import { rateLimitPage } from "@/lib/ratelimit/rate-limit-page";
 
 // ---------------------------------------------------------------------------
@@ -41,96 +42,18 @@ function resolveClientIp(request: NextRequest): string {
 	return normalizeIp(raw ?? "");
 }
 
-// --- Sliding-window limiter (self-contained; no external deps) -------------
+// --- Rate-limit gate --------------------------------------------------------
 
-interface SlidingWindowLimiter {
-	consume(key: string, now?: number): { ok: boolean; retryAfterSec: number };
-}
-
-function createLimiter(windowMs: number, max: number): SlidingWindowLimiter {
-	const buckets = new Map<string, number[]>();
-	return {
-		consume(key: string, now = Date.now()) {
-			const cutoff = now - windowMs;
-			const kept = (buckets.get(key) ?? []).filter((t) => t > cutoff);
-			if (kept.length >= max) {
-				return {
-					ok: false,
-					retryAfterSec: Math.ceil((kept[0] + windowMs - now + 1) / 1000),
-				};
-			}
-			kept.push(now);
-			buckets.set(key, kept);
-			return { ok: true, retryAfterSec: 0 };
-		},
-	};
-}
-
-// --- Env-driven limits ------------------------------------------------------
-
-function intFromEnv(name: string, fallback: number): number {
-	const raw = process.env[name];
-	if (raw === undefined || raw === "") return fallback;
-	const parsed = Number(raw);
-	return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function boolFromEnv(name: string, fallback: boolean): boolean {
-	const raw = process.env[name];
-	if (raw === undefined || raw === "") return fallback;
-	return raw === "1" || raw.toLowerCase() === "true";
-}
-
-const PER_IP_WINDOW_MS = intFromEnv("RATE_LIMIT_PER_IP_WINDOW_MS", 60_000);
-const PER_IP_MAX = intFromEnv("RATE_LIMIT_PER_IP_MAX", 120);
-const PER_PLAYER_WINDOW_MS = intFromEnv(
-	"RATE_LIMIT_PLAYER_WINDOW_MS",
-	3_600_000,
-);
-const PER_PLAYER_MAX = intFromEnv("RATE_LIMIT_PLAYER_MAX", 60);
-const DISTINCT_PLAYERS_MAX = intFromEnv(
-	"RATE_LIMIT_DISTINCT_PLAYERS_PER_IP",
-	120,
-);
-const DISABLED = boolFromEnv("RATE_LIMIT_DISABLED", false);
-
-// Module-level singletons; state persists for the lifetime of the process.
-const perIpLimiter = createLimiter(PER_IP_WINDOW_MS, PER_IP_MAX);
-const perPlayerLimiter = createLimiter(PER_PLAYER_WINDOW_MS, PER_PLAYER_MAX);
-const distinctPlayersLimiter = createLimiter(
-	PER_PLAYER_WINDOW_MS,
-	DISTINCT_PLAYERS_MAX,
-);
-
-// Tracks which player lookups were recently approved to hit upstream, so
-// requests served from the shared cache don't burn budget.
-const approvedLookups = new Map<string, number>();
-
-function enforceRateLimit(ip: string, playerKey: string): number | null {
-	if (DISABLED) return null;
-
-	const now = Date.now();
-
-	// Cache-aware: if this player was fetched moments ago, the loader cache is
-	// still warm and this request will be served from cache without an upstream
-	// call, so it shouldn't consume budget.
-	const approvedAt = approvedLookups.get(playerKey);
-	const cacheWindowMs = 300_000; // matches hypixelPlayer cacheLife revalidate
-	if (approvedAt !== undefined && now - approvedAt < cacheWindowMs) {
-		return null;
-	}
-
-	const perIp = perIpLimiter.consume(`ip:${ip}`, now);
-	if (!perIp.ok) return perIp.retryAfterSec;
-
-	const perPlayer = perPlayerLimiter.consume(`${ip}:${playerKey}`, now);
-	if (!perPlayer.ok) return perPlayer.retryAfterSec;
-
-	const distinct = distinctPlayersLimiter.consume(`distinct:${ip}`, now);
-	if (!distinct.ok) return distinct.retryAfterSec;
-
-	approvedLookups.set(playerKey, now);
-	return null;
+async function enforceRateLimit(ip: string, playerKey: string): Promise<number | null> {
+	const result = await getRateLimitBackend().guard({
+		ip,
+		playerKey,
+		// Matches the loader cacheLife revalidate (5 min for players). Requests
+		// served from the shared cache don't burn budget.
+		cacheWindowMs: 300_000,
+	});
+	if (result.ok) return null;
+	return result.retryAfterSec;
 }
 
 // --- Player URL parsing -----------------------------------------------------
@@ -146,7 +69,7 @@ function playerKeyFromPath(pathname: string): string | null {
 
 // --- Proxy ------------------------------------------------------------------
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const ip = resolveClientIp(request);
 	const pathname = request.nextUrl.pathname;
 
@@ -155,7 +78,7 @@ export function proxy(request: NextRequest) {
 	// header injected.
 	const playerKey = playerKeyFromPath(pathname);
 	if (playerKey !== null && ip) {
-		const retryAfterSec = enforceRateLimit(ip, playerKey);
+		const retryAfterSec = await enforceRateLimit(ip, playerKey);
 		if (retryAfterSec !== null) {
 			return new NextResponse(rateLimitPage(retryAfterSec), {
 				status: 429,

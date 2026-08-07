@@ -1,4 +1,18 @@
 services:
+    redis:
+        image: redis:7-alpine
+        container_name: hypixel_achievements_redis
+        restart: unless-stopped
+        command:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --maxmemory-policy
+            - allkeys-lru
+        volumes:
+            - redis-data:/data
+        networks:
+            - proxy
     app:
         build: .
         image: hypixel-achievements:current
@@ -6,8 +20,10 @@ services:
         restart: unless-stopped
         env_file:
             - .env.docker
-        volumes:
-            - hypixel-cache:/app/lib/.cache
+        environment:
+            - REDIS_URL=redis://redis:6379
+        depends_on:
+            - redis
         labels:
             - "traefik.enable=true"
             - "traefik.docker.network=proxy"
@@ -18,7 +34,7 @@ services:
             - proxy
 
 volumes:
-    hypixel-cache:
+    redis-data:
 
 networks:
     proxy:
