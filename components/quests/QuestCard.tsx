@@ -109,7 +109,7 @@ function ObjectiveList({
 	const lines = description.split("\n").filter(Boolean);
 
 	return (
-		<ul className="space-y-2">
+		<ul className="space-y-2.5">
 			{objectives.map((obj, index) => {
 				const pct =
 					obj.target > 0
@@ -118,7 +118,7 @@ function ObjectiveList({
 				const label = lines[index] ?? obj.id;
 
 				return (
-					<li key={obj.id} className="flex gap-2 items-start">
+					<li key={obj.id} className="flex gap-2.5 items-start">
 						<span
 							className={`mt-0.5 shrink-0 w-3.5 h-3.5 rounded-[2px] border-2 flex items-center justify-center ${
 								obj.completed
@@ -171,13 +171,13 @@ function RewardFooter({ rewards }: { rewards: QuestView["rewards"] }) {
 	if (rewards.length === 0) return null;
 
 	return (
-		<footer className="mt-3 pt-2.5 border-t-2 border-dashed border-mc-border/50">
+		<footer className="mt-3.5 pt-3 border-t-2 border-dashed border-mc-border/50">
 			<p
-				className={`${PF} text-[0.6rem] uppercase tracking-[0.12em] text-mc-stone-light mb-1.5`}
+				className={`${PF} text-[0.6rem] uppercase tracking-[0.12em] text-mc-stone-light mb-2`}
 			>
 				Rewards
 			</p>
-			<div className="flex flex-wrap gap-1.5">
+			<div className="flex flex-wrap gap-2">
 				{rewards.map((reward, index) => (
 					<span
 						key={`${reward.type}-${index}`}
@@ -215,11 +215,11 @@ export function QuestCard({
 	return (
 		<article
 			data-status={quest.status}
-			className={`flex rounded-sm border-2 border-mc-border bg-mc-panel ${PANEL_SHADOW} ${
+			className={`group flex rounded-sm border-2 border-mc-border bg-mc-panel ${PANEL_SHADOW} transition-[transform,box-shadow] duration-150 hover:shadow-[inset_2px_2px_0_rgba(255,255,255,0.09),inset_-1px_-1px_0_rgba(0,0,0,0.2),4px_5px_0_rgba(0,0,0,0.4)] ${
 				completed
-					? "ring-1 ring-mc-grass/30"
+					? "ring-1 ring-mc-grass/40"
 					: quest.status === "active"
-						? "ring-1 ring-mc-sky/20"
+						? "ring-1 ring-mc-sky/30"
 						: ""
 			}`}
 		>
@@ -228,8 +228,8 @@ export function QuestCard({
 				aria-hidden
 			/>
 
-			<div className="flex-1 min-w-0 p-3 sm:p-3.5">
-				<header className="flex gap-2.5 sm:gap-3">
+			<div className="flex-1 min-w-0 p-3 sm:p-4">
+				<header className="flex items-start gap-2.5 sm:gap-3">
 					<div className="shrink-0 w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-sm border-2 border-mc-border bg-mc-stone-dark shadow-[inset_2px_2px_3px_rgba(0,0,0,0.4)]">
 						<PixelImg
 							src={gameIcon!}
@@ -241,81 +241,50 @@ export function QuestCard({
 					</div>
 
 					<div className="flex-1 min-w-0">
-						<div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
-							{!hideType && (
+						<div className="flex items-start justify-between gap-2">
+							<h3
+								className={`${PF} text-sm sm:text-[0.95rem] text-foreground leading-snug tracking-[0.03em] min-w-0 break-words group-hover:text-white`}
+							>
+								{quest.name}
+							</h3>
+							<span
+								className={`inline-flex items-center gap-1.5 shrink-0 mt-0.5 ${PF} text-[0.6rem] uppercase tracking-wide ${status.text}`}
+								title={status.label}
+							>
 								<span
-									className={`${PF} text-[0.6rem] uppercase tracking-wide ${type.text}`}
-								>
-									{type.label}
-								</span>
-							)}
+									className={`w-2 h-2 rounded-full ${status.dot}`}
+									aria-hidden
+								/>
+								{count !== undefined && (
+									<span>{count.toLocaleString()}</span>
+								)}
+							</span>
+						</div>
+
+						<div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5">
 							<span
 								className={`inline-flex items-center gap-1.5 ${PF} text-[0.65rem] uppercase tracking-wide px-2 py-0.5 rounded-sm border-2 border-mc-border bg-mc-stone-dark text-foreground shadow-[inset_1px_1px_0_rgba(255,255,255,0.06)]`}
 							>
 								{formatGameLabel(quest.game)}
 							</span>
-							{count !== undefined && (
-								<span
-									className={`inline-flex items-center gap-1 ${PF} text-[0.6rem] tabular-nums text-mc-sky`}
-								>
+							{!hideType && (
+								<span className="inline-flex items-center gap-2">
 									<span
-										className="w-1.5 h-1.5 rounded-full bg-mc-grass shadow-[0_0_5px_rgba(85,255,85,0.55)]"
+										className="w-1 h-1 rounded-full bg-mc-stone-light/50"
 										aria-hidden
 									/>
-									{count.toLocaleString()} playing
+									<span
+										className={`${PF} text-[0.6rem] uppercase tracking-wide ${type.text}`}
+									>
+										{type.label}
+									</span>
 								</span>
 							)}
-							<span className="flex items-center gap-1.5">
-								<span
-									className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dot}`}
-									aria-hidden
-								/>
-								<span
-									className={`${PF} text-[0.6rem] uppercase ${status.text}`}
-								>
-									{status.label}
-								</span>
-							</span>
-						</div>
-
-						<div className="flex items-start justify-between gap-3">
-							<h3
-								className={`${PF} text-sm sm:text-[0.95rem] text-foreground leading-snug tracking-[0.03em] min-w-0`}
-							>
-								{quest.name}
-							</h3>
-							<div className="shrink-0 text-right tabular-nums">
-								<span
-									className={`${PF} text-lg leading-none block ${
-										completed
-											? "text-mc-grass"
-											: progressPct > 0
-												? "text-mc-sky"
-												: "text-mc-stone-light"
-									}`}
-								>
-									{progressPct}%
-								</span>
-								<span
-									className={`${PF} text-[0.6rem] text-mc-stone-light`}
-								>
-									{totals.progress}/{totals.target}
-								</span>
-							</div>
 						</div>
 					</div>
 				</header>
 
-				<div className="mt-2.5">
-					<ProgressBar
-						pct={progressPct}
-						completed={completed}
-						active={quest.status === "active"}
-						className="h-2.5"
-					/>
-				</div>
-
-				<div className="mt-3">
+				<div className="mt-3.5">
 					<ObjectiveList
 						objectives={quest.objectives}
 						description={quest.description}
