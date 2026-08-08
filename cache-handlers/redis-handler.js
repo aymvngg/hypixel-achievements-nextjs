@@ -47,18 +47,23 @@ async function isReady() {
 		Promise.race([
 			redis.connect(),
 			new Promise((res) => setTimeout(res, CONNECT_TIMEOUT_MS)),
-		]).then(() => {
-			if (redis.status === "ready") client = redis;
-			resolve(redis.status === "ready");
+		]).then(
+			() => {
+				if (redis.status === "ready") client = redis;
+				resolve(redis.status === "ready");
+			},
+			() => {
+				resolve(false);
+			},
+		).finally(() => {
 			connecting = null;
+			if (redis.status !== "ready") {
+				redis.disconnect();
+			}
 		});
 	});
 
-	try {
-		return await connecting;
-	} catch {
-		return false;
-	}
+	return await connecting;
 }
 
 function redisKey(cacheKey) {
