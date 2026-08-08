@@ -211,8 +211,6 @@ export function QuestCard({
 	const type = TYPE_META[quest.type];
 	const status = STATUS_META[quest.status];
 	const gameIcon = gameIconUrl(quest.game);
-	const progressPct = Math.round(quest.progress * 100);
-	const totals = aggregateCounts(quest);
 	const multiObjective = quest.objectives.length > 1;
 	const completed = quest.status === "completed";
 	const countsGame = quest.countsGame ?? quest.game;
@@ -271,20 +269,11 @@ export function QuestCard({
 								{quest.name}
 							</h3>
 							<div className="flex items-center gap-2 shrink-0 mt-0.5">
-								<span
-									className={`w-2 h-2 rounded-full ${status.dot}`}
-									title={status.label}
-									aria-hidden
-								/>
 								{resolvedCount !== undefined && (
 									<span
 										className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-mc-border bg-black/30 shadow-[inset_1px_1px_0_rgba(255,255,255,0.05),inset_-1px_-1px_0_rgba(0,0,0,0.25)]"
 										title={`${resolvedCount.toLocaleString()} players online — ${countSourceLabel}`}
 									>
-										<span
-											className="w-1.5 h-1.5 rounded-full bg-mc-emerald animate-pulse motion-reduce:animate-none"
-											aria-hidden
-										/>
 										<span
 											className={`${PF} text-[0.7rem] leading-none tabular-nums text-mc-gold`}
 										>
