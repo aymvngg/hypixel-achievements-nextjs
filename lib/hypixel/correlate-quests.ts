@@ -12,6 +12,7 @@ import {
 	normalizeQuestGameKey,
 } from "@/lib/util/quest-games";
 import { getPeriodStart } from "@/lib/util/quest-resets";
+import { deriveQuestMode } from "@/lib/util/quest-modes";
 
 export interface RawQuestObjective {
 	id: string;
@@ -45,9 +46,10 @@ function parseResetType(
 function isMythicOrSpecialQuest(def: RawQuestDefinition): boolean {
 	const name = def.name.toLowerCase();
 	if (name.includes("mythic quest")) return true;
-	return def.rewards?.some((r) =>
-		r.type?.toLowerCase().includes("mythic"),
-	) ?? false;
+	return (
+		def.rewards?.some((r) => r.type?.toLowerCase().includes("mythic")) ??
+		false
+	);
 }
 
 function objectiveTarget(obj: RawQuestObjective): number {
@@ -176,10 +178,14 @@ export function correlateQuests(
 				status,
 				activeObjectives,
 			);
+			const mode = deriveQuestMode(game, def);
 
 			results.push({
 				game,
 				questId: def.id,
+				modeKeys: mode?.modeKeys,
+				countsGame: mode?.countsGame,
+				modeLabel: mode?.label,
 				name: def.name.trim(),
 				description: def.description.trim(),
 				type,

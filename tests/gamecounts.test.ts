@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
 	formatPlayerCount,
 	mapCountsToUiGames,
+	mapCountsModesToUiGames,
 	normalizeCountsGameKey,
 } from "@/lib/util/gamecounts";
 import type { RawCountsResponse } from "@/lib/hypixel/api";
@@ -18,7 +19,10 @@ const sample: RawCountsResponse = {
 		PROTOTYPE: { players: 50 },
 		ARCADE: { players: 700 },
 		UHC: { players: 40 },
-		TNTGAMES: { players: 190 },
+		TNTGAMES: {
+			players: 190,
+			modes: { TNTRUN: 49, BOWSPLEEF: 1, TNTAG: 107 },
+		},
 		MCGO: { players: 36 },
 		SUPER_SMASH: { players: 3 },
 		WOOL_GAMES: { players: 93 },
@@ -32,7 +36,10 @@ const sample: RawCountsResponse = {
 		SPEED_UHC: { players: 0 },
 		BUILD_BATTLE: { players: 780 },
 		BEDWARS: { players: 4500 },
-		MURDER_MYSTERY: { players: 370 },
+		MURDER_MYSTERY: {
+			players: 370,
+			modes: { MURDER_INFECTION: 13, MURDER_CLASSIC: 192 },
+		},
 		HOUSING: { players: 980 },
 		LEGACY: {
 			players: 14,
@@ -121,6 +128,26 @@ describe("mapCountsToUiGames", () => {
 
 	it("still emits zero-player games", () => {
 		expect(mapped.speeduhc).toBe(0);
+	});
+});
+
+describe("mapCountsModesToUiGames", () => {
+	const mapped = mapCountsModesToUiGames(sample);
+
+	it("preserves per-mode counts under normalized game keys", () => {
+		expect(mapped.tntgames).toEqual({
+			TNTRUN: 49,
+			BOWSPLEEF: 1,
+			TNTAG: 107,
+		});
+		expect(mapped.murdermystery).toEqual({
+			MURDER_INFECTION: 13,
+			MURDER_CLASSIC: 192,
+		});
+	});
+
+	it("does not emit games without a mode breakdown", () => {
+		expect(mapped.bedwars).toBeUndefined();
 	});
 });
 

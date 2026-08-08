@@ -79,6 +79,31 @@ export function mapCountsToUiGames(
 	return out;
 }
 
+/**
+ * Converts the nested gamecounts mode breakdown into UI game keys while
+ * preserving the raw mode identifiers used by the counts API.
+ */
+export function mapCountsModesToUiGames(
+	raw: RawCountsResponse,
+): Record<string, Record<string, number>> {
+	const out: Record<string, Record<string, number>> = {};
+	const games = raw.games ?? {};
+
+	for (const [key, entry] of Object.entries(games)) {
+		if (COUNTS_NON_GAME_KEYS.has(key) && key !== "LEGACY") continue;
+		if (!entry?.modes) continue;
+
+		const uiKey = normalizeCountsGameKey(key);
+		const modes: Record<string, number> = {};
+		for (const [mode, count] of Object.entries(entry.modes)) {
+			if (typeof count === "number") modes[mode] = count;
+		}
+		if (Object.keys(modes).length > 0) out[uiKey] = modes;
+	}
+
+	return out;
+}
+
 const compactFormatter = new Intl.NumberFormat("en", {
 	notation: "compact",
 	maximumFractionDigits: 1,

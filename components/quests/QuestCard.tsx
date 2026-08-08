@@ -5,6 +5,7 @@ import type {
 } from "@/lib/hypixel/types";
 import { formatQuestReward } from "@/lib/util/quest-rewards";
 import { formatGameLabel, gameIconUrl } from "@/lib/util/games";
+import { formatModeCountLabel } from "@/lib/util/quest-modes";
 import { PixelImg } from "@/components/ui/PixelImg";
 import { PixelIcon } from "@/components/ui/PixelIcon";
 
@@ -196,6 +197,7 @@ export function QuestCard({
 	showGame,
 	hideType,
 	count,
+	modeCounts,
 }: {
 	quest: QuestView;
 	showGame?: boolean;
@@ -203,6 +205,8 @@ export function QuestCard({
 	hideType?: boolean;
 	/** Live player count for this quest's game, if available. */
 	count?: number;
+	/** Live per-mode counts, keyed by UI game and raw counts mode. */
+	modeCounts?: Record<string, Record<string, number>>;
 }) {
 	const type = TYPE_META[quest.type];
 	const status = STATUS_META[quest.status];
@@ -211,6 +215,25 @@ export function QuestCard({
 	const totals = aggregateCounts(quest);
 	const multiObjective = quest.objectives.length > 1;
 	const completed = quest.status === "completed";
+	const countsGame = quest.countsGame ?? quest.game;
+	const modeLookup = modeCounts?.[countsGame];
+	const presentModeKeys =
+		quest.modeKeys?.filter(
+			(modeKey) => modeLookup?.[modeKey] !== undefined,
+		) ?? [];
+	const modeCount =
+		presentModeKeys.length > 0 && modeLookup
+			? presentModeKeys.reduce(
+					(sum, modeKey) => sum + modeLookup[modeKey],
+					0,
+				)
+			: undefined;
+	const resolvedCount = modeCount !== undefined ? modeCount : count;
+	const countSourceLabel =
+		modeCount !== undefined
+			? (quest.modeLabel ??
+				formatModeCountLabel(countsGame, presentModeKeys))
+			: formatGameLabel(quest.game);
 
 	return (
 		<article
@@ -247,26 +270,46 @@ export function QuestCard({
 							>
 								{quest.name}
 							</h3>
-							<span
-								className={`inline-flex items-center gap-1.5 shrink-0 mt-0.5 ${PF} text-[0.6rem] uppercase tracking-wide ${status.text}`}
-								title={status.label}
-							>
+							<div className="flex items-center gap-2 shrink-0 mt-0.5">
 								<span
 									className={`w-2 h-2 rounded-full ${status.dot}`}
+									title={status.label}
 									aria-hidden
 								/>
-								{count !== undefined && (
-									<span>{count.toLocaleString()}</span>
+								{resolvedCount !== undefined && (
+									<span
+										className="inline-flex items-center gap-1.5 px-2 py-1 rounded-sm border border-mc-border bg-black/30 shadow-[inset_1px_1px_0_rgba(255,255,255,0.05),inset_-1px_-1px_0_rgba(0,0,0,0.25)]"
+										title={`${resolvedCount.toLocaleString()} players online — ${countSourceLabel}`}
+									>
+										<span
+											className="w-1.5 h-1.5 rounded-full bg-mc-emerald animate-pulse motion-reduce:animate-none"
+											aria-hidden
+										/>
+										<span
+											className={`${PF} text-[0.7rem] leading-none tabular-nums text-mc-gold`}
+										>
+											{resolvedCount.toLocaleString()}
+										</span>
+										<span
+											className={`${PF} text-[0.5rem] uppercase tracking-wider text-mc-stone-light`}
+										>
+											online
+										</span>
+										<span
+											className="w-px h-3 bg-mc-border/70"
+											aria-hidden
+										/>
+										<span
+											className={`${PF} text-[0.55rem] uppercase tracking-wide text-foreground/80 max-w-[9rem] truncate`}
+										>
+											{countSourceLabel}
+										</span>
+									</span>
 								)}
-							</span>
+							</div>
 						</div>
 
 						<div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5">
-							<span
-								className={`inline-flex items-center gap-1.5 ${PF} text-[0.65rem] uppercase tracking-wide px-2 py-0.5 rounded-sm border-2 border-mc-border bg-mc-stone-dark text-foreground shadow-[inset_1px_1px_0_rgba(255,255,255,0.06)]`}
-							>
-								{formatGameLabel(quest.game)}
-							</span>
 							{!hideType && (
 								<span className="inline-flex items-center gap-2">
 									<span

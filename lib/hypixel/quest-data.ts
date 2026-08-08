@@ -12,7 +12,10 @@ import {
 	correlateQuests,
 	getQuestGameNames,
 } from "@/lib/hypixel/correlate-quests";
-import { mapCountsToUiGames } from "@/lib/util/gamecounts";
+import {
+	mapCountsModesToUiGames,
+	mapCountsToUiGames,
+} from "@/lib/util/gamecounts";
 
 export interface QuestPageData {
 	player: PublicPlayerData;
@@ -21,6 +24,8 @@ export interface QuestPageData {
 	/** Per-gamemode live player counts, keyed by UI game id. Omitted when the
 	 * counts endpoint is unavailable so the UI degrades gracefully. */
 	counts?: Record<string, number>;
+	/** Per-mode live player counts, keyed by UI game id and raw mode id. */
+	modeCounts?: Record<string, Record<string, number>>;
 	/** Total players on the Hypixel network. */
 	totalPlayers?: number;
 }
@@ -46,6 +51,7 @@ export const getPlayerQuestPageData = cache(
 
 		if (countsResult.ok) {
 			data.counts = mapCountsToUiGames(countsResult.raw);
+			data.modeCounts = mapCountsModesToUiGames(countsResult.raw);
 			data.totalPlayers = countsResult.raw.playerCount;
 		}
 

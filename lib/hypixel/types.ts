@@ -1,6 +1,5 @@
 export type CacheResult<T> =
-	| { ok: true; data: T }
-	| { ok: false; error: string };
+	{ ok: true; data: T } | { ok: false; error: string };
 
 export interface AchievementView {
 	game: string;
@@ -59,6 +58,12 @@ export interface QuestRewardView {
 export interface QuestView {
 	game: string;
 	questId: string;
+	/** Raw gamecounts mode keys applicable to this quest, when mode-specific. */
+	modeKeys?: string[];
+	/** UI game key containing modeKeys when it differs from the quest game. */
+	countsGame?: string;
+	/** Single tag label replacing the joined per-mode labels, when set. */
+	modeLabel?: string;
 	name: string;
 	description: string;
 	type: QuestResetType;

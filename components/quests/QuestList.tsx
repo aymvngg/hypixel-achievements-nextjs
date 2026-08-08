@@ -5,10 +5,12 @@ export function QuestList({
 	quests,
 	showGameOnCard,
 	counts,
+	modeCounts,
 }: {
 	quests: QuestView[];
 	showGameOnCard: boolean;
 	counts?: Record<string, number>;
+	modeCounts?: Record<string, Record<string, number>>;
 }) {
 	if (quests.length === 0) {
 		return (
@@ -26,6 +28,7 @@ export function QuestList({
 					quest={quest}
 					showGame={showGameOnCard}
 					count={counts?.[quest.game]}
+					modeCounts={modeCounts}
 				/>
 			))}
 		</div>

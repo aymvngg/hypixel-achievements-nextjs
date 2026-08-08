@@ -63,15 +63,11 @@ async function PlayerQuestsContent({
 		);
 	}
 
-	const { decoded, filterParams, questData, questSummary } =
-		result;
+	const { decoded, filterParams, questData, questSummary } = result;
 
 	return (
 		<div className="space-y-4">
-			<PlayerHeader
-				player={questData.player}
-				query={decoded}
-			/>
+			<PlayerHeader player={questData.player} query={decoded} />
 			<PlayerNav username={decoded} activeSection="quests" />
 			<QuestSummaryStrip summary={questSummary} />
 			<PlayerQuestExplorer
@@ -80,6 +76,7 @@ async function PlayerQuestsContent({
 				views={questData.views}
 				games={questData.games}
 				counts={questData.counts}
+				modeCounts={questData.modeCounts}
 			/>
 		</div>
 	);
